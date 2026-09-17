@@ -1,0 +1,25 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>JARVIS — Technology Intelligence</title>
+  <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+  <header>
+    <div><span class="eyebrow">JARVIS</span><h1>Technology Intelligence</h1></div>
+    <button id="refresh">Refresh News</button>
+  </header>
+  <section class="controls">
+    <input id="search" placeholder="Search technology news...">
+    <select id="category"><option value="">All categories</option></select>
+    <select id="importance"><option value="4">Important+</option><option value="6">High priority</option><option value="8">Critical only</option></select>
+  </section>
+  <main>
+    <div id="status">Loading...</div>
+    <section id="feed" class="feed"></section>
+  </main>
+  <script src="/static/app.js"></script>
+</body>
+</html>
