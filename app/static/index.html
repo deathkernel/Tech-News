@@ -3,23 +3,52 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
-  <title>JARVIS — Technology Intelligence</title>
+  <meta name="theme-color" content="#050812">
+  <title>JARVIS — Tech Intelligence Cards</title>
   <link rel="stylesheet" href="/static/style.css">
 </head>
 <body>
-  <header>
-    <div><span class="eyebrow">JARVIS</span><h1>Technology Intelligence</h1></div>
-    <button id="refresh">Refresh News</button>
+  <header class="topbar">
+    <div class="brand">
+      <div class="brand-mark">J</div>
+      <div>
+        <span class="eyebrow">JARVIS</span>
+        <h1>Tech Intelligence</h1>
+      </div>
+    </div>
+    <button id="refresh" class="refresh">↻ Refresh</button>
   </header>
-  <section class="controls">
-    <input id="search" placeholder="Search technology news...">
-    <select id="category"><option value="">All categories</option></select>
-    <select id="importance"><option value="4">Important+</option><option value="6">High priority</option><option value="8">Critical only</option></select>
+
+  <section class="hero">
+    <div>
+      <span class="hero-kicker">TECH RADAR / FUTURE SIGNALS</span>
+      <h2>One story. <span>Everything you need.</span></h2>
+      <p>News, why it matters, developer impact and a practical code example — inside one card.</p>
+    </div>
+    <div class="live-pill"><i></i> LIVE INTELLIGENCE</div>
   </section>
+
+  <section class="controls">
+    <input id="search" aria-label="Search" placeholder="Search AI, Python, NVIDIA, CVE, cloud...">
+    <select id="category" aria-label="Category"><option value="">All categories</option></select>
+    <select id="importance" aria-label="Importance">
+      <option value="4">Important+</option>
+      <option value="6">High priority</option>
+      <option value="8">Critical only</option>
+    </select>
+  </section>
+
   <main>
-    <div id="status">Loading...</div>
+    <div class="feed-head">
+      <div>
+        <span class="eyebrow">CURATED FEED</span>
+        <h3>What matters in tech</h3>
+      </div>
+      <div id="status">Loading...</div>
+    </div>
     <section id="feed" class="feed"></section>
   </main>
+
   <script src="/static/app.js"></script>
 </body>
 </html>
