@@ -21,7 +21,10 @@
     </div>
     <div class="top-actions">
       <span class="live"><i></i> LIVE FEED</span>
+      <button id="brief" class="refresh" type="button"><span>✦</span> Daily Brief</button>
+      <button id="upload" class="refresh" type="button"><span>⌁</span> Screenshot</button>
       <button id="refresh" class="refresh" type="button"><span>↻</span> Refresh</button>
+      <input id="screenshotInput" type="file" accept="image/*" hidden>
     </div>
   </header>
 
@@ -47,6 +50,30 @@
           <small>FILTERED BY FUTURE VALUE</small>
         </div>
       </div>
+    </section>
+
+    <section class="intel-strip" aria-label="JARVIS intelligence summary">
+      <div><b id="intelTotal">—</b><span>SIGNALS</span></div>
+      <div><b id="intelMajor">—</b><span>MAJOR</span></div>
+      <div><b id="intelImportant">—</b><span>IMPORTANT</span></div>
+      <div class="intel-trend"><b id="intelTop">SCANNING</b><span>TOP SIGNAL</span></div>
+    </section>
+
+    <section id="briefPanel" class="brief-panel" hidden>
+      <div class="brief-heading"><span>JARVIS / DAILY INTELLIGENCE</span><button id="closeBrief" type="button">×</button></div>
+      <h2 id="briefHeadline">Building your brief...</h2>
+      <p id="briefSummary"></p>
+      <div id="briefStories" class="brief-stories"></div>
+    </section>
+
+    <section id="screenshotPanel" class="screenshot-panel" hidden>
+      <div>
+        <span class="panel-kicker">SCREENSHOT INPUT</span>
+        <h2>Feed JARVIS a tech screenshot.</h2>
+        <p>The image stays in your browser for now. Use it as a visual reference while turning social posts into tracked signals.</p>
+      </div>
+      <img id="screenshotPreview" alt="Uploaded technology screenshot preview">
+      <button id="clearScreenshot" type="button">Remove</button>
     </section>
 
     <section class="controls" aria-label="News controls">
