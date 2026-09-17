@@ -10,11 +10,11 @@ from fastapi.staticfiles import StaticFiles
 
 from .config import CATEGORIES, RSS_SOURCES
 from .models import NewsItem
-from .services import collect_news
+from .services import collect_news, daily_brief, intelligence_snapshot
 
 app = FastAPI(
     title="JARVIS Command Center API",
-    version="1.1.0",
+    version="1.2.0",
     description="Technology intelligence and future-useful news collection API.",
 )
 
@@ -40,6 +40,16 @@ async def categories():
 @app.get("/sources")
 async def sources():
     return {"sources": RSS_SOURCES}
+
+
+@app.get("/intelligence")
+async def intelligence(minimum_importance: int = Query(default=4, ge=0, le=10)):
+    return await intelligence_snapshot(minimum_importance)
+
+
+@app.get("/brief")
+async def brief(minimum_importance: int = Query(default=4, ge=0, le=10)):
+    return await daily_brief(minimum_importance)
 
 
 @app.get("/image")
