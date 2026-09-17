@@ -6,6 +6,14 @@
   <meta name="theme-color" content="#07090d">
   <title>JARVIS — Tech Intelligence</title>
   <link rel="stylesheet" href="/static/style.css">
+  <style>
+    .intel-strip{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:10px;padding:10px;border:1px solid rgba(255,255,255,.09);border-radius:18px;background:rgba(255,255,255,.025)}
+    .intel-strip>div{min-height:64px;padding:10px 13px;border:1px solid rgba(255,255,255,.07);border-radius:12px;background:rgba(0,0,0,.18);display:flex;flex-direction:column;justify-content:center;gap:5px}
+    .intel-strip b{font-size:18px;line-height:1;color:#f5f7fb}.intel-strip span{font-size:7px;color:#69717c;font-weight:900;letter-spacing:.16em}.intel-strip .intel-trend b{font-size:10px;color:#caff35;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    .brief-panel,.screenshot-panel{margin-top:18px;padding:20px;border:1px solid rgba(202,255,53,.16);border-radius:20px;background:linear-gradient(145deg,rgba(202,255,53,.055),rgba(255,255,255,.018));box-shadow:0 25px 70px rgba(0,0,0,.25)}
+    .brief-heading{display:flex;justify-content:space-between;color:#caff35;font-size:8px;font-weight:950;letter-spacing:.16em}.brief-heading button{border:0;background:none;color:#9ba3ae;font-size:22px;cursor:pointer}.brief-panel h2{margin:12px 0 5px;font-size:26px;letter-spacing:-.04em}.brief-panel>p{margin:0;color:#818996;font-size:11px;line-height:1.6}.brief-stories{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin-top:15px}.brief-story{padding:13px;border:1px solid rgba(255,255,255,.07);border-radius:13px;background:rgba(0,0,0,.18)}.brief-story strong{display:block;color:#f0f2f5;font-size:11px;line-height:1.35}.brief-story span{display:block;margin-top:7px;color:#caff35;font-size:7px;font-weight:900;letter-spacing:.12em}.brief-story p{margin:7px 0 0;color:#7f8792;font-size:9px;line-height:1.5}.screenshot-panel{display:grid;grid-template-columns:1fr 220px auto;gap:16px;align-items:center}.panel-kicker{color:#caff35;font-size:7px;font-weight:950;letter-spacing:.16em}.screenshot-panel h2{margin:7px 0;font-size:20px}.screenshot-panel p{margin:0;color:#7f8792;font-size:9px;line-height:1.5}.screenshot-panel img{width:220px;height:124px;object-fit:cover;border-radius:10px;border:1px solid rgba(255,255,255,.1)}.screenshot-panel>button{padding:8px 11px;border:1px solid rgba(255,255,255,.12);border-radius:9px;background:rgba(255,255,255,.04);color:#dce1e7;cursor:pointer;font-size:9px}
+    @media(max-width:760px){.top-actions{gap:5px}.top-actions .refresh{padding:7px 8px;font-size:8px}.top-actions .refresh span{font-size:12px}.intel-strip{grid-template-columns:repeat(2,1fr)}.brief-stories{grid-template-columns:1fr}.screenshot-panel{grid-template-columns:1fr}.screenshot-panel img{width:100%;height:auto;max-height:220px}.screenshot-panel>button{width:max-content}}
+  </style>
 </head>
 <body>
   <div class="ambient ambient-one"></div>
@@ -14,14 +22,11 @@
   <header class="topbar">
     <div class="brand">
       <span class="brand-orbit"><span></span></span>
-      <div>
-        <div class="brand-name">JARVIS</div>
-        <div class="brand-sub">TECH INTELLIGENCE</div>
-      </div>
+      <div><div class="brand-name">JARVIS</div><div class="brand-sub">TECH INTELLIGENCE</div></div>
     </div>
     <div class="top-actions">
       <span class="live"><i></i> LIVE FEED</span>
-      <button id="brief" class="refresh" type="button"><span>✦</span> Daily Brief</button>
+      <button id="brief" class="refresh" type="button"><span>✦</span> Brief</button>
       <button id="upload" class="refresh" type="button"><span>⌁</span> Screenshot</button>
       <button id="refresh" class="refresh" type="button"><span>↻</span> Refresh</button>
       <input id="screenshotInput" type="file" accept="image/*" hidden>
@@ -30,78 +35,20 @@
 
   <main>
     <section class="hero">
-      <div class="hero-copy">
-        <p class="eyebrow"><span>01</span> SIGNALS WORTH SHARING</p>
-        <h1>Know what's<br><em>next.</em></h1>
-        <p class="hero-text">JARVIS scans the technology world and turns important updates into clean, ready-to-post stories.</p>
-      </div>
-      <div class="hero-side">
-        <div class="radar">
-          <div class="radar-ring ring-a"></div>
-          <div class="radar-ring ring-b"></div>
-          <div class="radar-sweep"></div>
-          <span class="radar-dot dot-a"></span>
-          <span class="radar-dot dot-b"></span>
-          <span class="radar-dot dot-c"></span>
-          <strong>J</strong>
-        </div>
-        <div class="hero-meta">
-          <span>AI · CLOUD · SECURITY · DEV</span>
-          <small>FILTERED BY FUTURE VALUE</small>
-        </div>
-      </div>
+      <div class="hero-copy"><p class="eyebrow"><span>01</span> SIGNALS WORTH SHARING</p><h1>Know what's<br><em>next.</em></h1><p class="hero-text">JARVIS scans the technology world and turns important updates into clean, ready-to-post stories.</p></div>
+      <div class="hero-side"><div class="radar"><div class="radar-ring ring-a"></div><div class="radar-ring ring-b"></div><div class="radar-sweep"></div><span class="radar-dot dot-a"></span><span class="radar-dot dot-b"></span><span class="radar-dot dot-c"></span><strong>J</strong></div><div class="hero-meta"><span>AI · CLOUD · SECURITY · DEV</span><small>FILTERED BY FUTURE VALUE</small></div></div>
     </section>
 
-    <section class="intel-strip" aria-label="JARVIS intelligence summary">
-      <div><b id="intelTotal">—</b><span>SIGNALS</span></div>
-      <div><b id="intelMajor">—</b><span>MAJOR</span></div>
-      <div><b id="intelImportant">—</b><span>IMPORTANT</span></div>
-      <div class="intel-trend"><b id="intelTop">SCANNING</b><span>TOP SIGNAL</span></div>
-    </section>
+    <section class="intel-strip" aria-label="JARVIS intelligence summary"><div><b id="intelTotal">—</b><span>SIGNALS</span></div><div><b id="intelMajor">—</b><span>MAJOR</span></div><div><b id="intelImportant">—</b><span>IMPORTANT</span></div><div class="intel-trend"><b id="intelTop">SCANNING</b><span>TOP SIGNAL</span></div></section>
 
-    <section id="briefPanel" class="brief-panel" hidden>
-      <div class="brief-heading"><span>JARVIS / DAILY INTELLIGENCE</span><button id="closeBrief" type="button">×</button></div>
-      <h2 id="briefHeadline">Building your brief...</h2>
-      <p id="briefSummary"></p>
-      <div id="briefStories" class="brief-stories"></div>
-    </section>
+    <section id="briefPanel" class="brief-panel" hidden><div class="brief-heading"><span>JARVIS / DAILY INTELLIGENCE</span><button id="closeBrief" type="button">×</button></div><h2 id="briefHeadline">Building your brief...</h2><p id="briefSummary"></p><div id="briefStories" class="brief-stories"></div></section>
 
-    <section id="screenshotPanel" class="screenshot-panel" hidden>
-      <div>
-        <span class="panel-kicker">SCREENSHOT INPUT</span>
-        <h2>Feed JARVIS a tech screenshot.</h2>
-        <p>The image stays in your browser for now. Use it as a visual reference while turning social posts into tracked signals.</p>
-      </div>
-      <img id="screenshotPreview" alt="Uploaded technology screenshot preview">
-      <button id="clearScreenshot" type="button">Remove</button>
-    </section>
+    <section id="screenshotPanel" class="screenshot-panel" hidden><div><span class="panel-kicker">SCREENSHOT INPUT</span><h2>Feed JARVIS a tech screenshot.</h2><p>The image is previewed locally in your browser and can be used as a visual reference for future intelligence input.</p></div><img id="screenshotPreview" alt="Uploaded technology screenshot preview"><button id="clearScreenshot" type="button">Remove</button></section>
 
-    <section class="controls" aria-label="News controls">
-      <label class="search-wrap">
-        <span>⌕</span>
-        <input id="search" aria-label="Search news" placeholder="Search the signal feed...">
-      </label>
-      <select id="category" aria-label="Filter by category">
-        <option value="">All topics</option>
-      </select>
-      <select id="importance" aria-label="Filter by importance">
-        <option value="4">Important+</option>
-        <option value="6">High impact</option>
-        <option value="8">Major only</option>
-      </select>
-    </section>
-
-    <div class="feed-bar">
-      <div>
-        <span class="feed-title">JARVIS SIGNAL FEED</span>
-        <span class="feed-sub">READY FOR YOUR NEXT POST</span>
-      </div>
-      <span id="status">Scanning...</span>
-    </div>
-
+    <section class="controls" aria-label="News controls"><label class="search-wrap"><span>⌕</span><input id="search" aria-label="Search news" placeholder="Search the signal feed..."></label><select id="category" aria-label="Filter by category"><option value="">All topics</option></select><select id="importance" aria-label="Filter by importance"><option value="4">Important+</option><option value="6">High impact</option><option value="8">Major only</option></select></section>
+    <div class="feed-bar"><div><span class="feed-title">JARVIS SIGNAL FEED</span><span class="feed-sub">READY FOR YOUR NEXT POST</span></div><span id="status">Scanning...</span></div>
     <section id="feed" class="feed" aria-live="polite"></section>
   </main>
-
   <script src="/static/app.js"></script>
 </body>
 </html>
