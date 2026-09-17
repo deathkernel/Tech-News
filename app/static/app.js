@@ -104,7 +104,7 @@ function renderPost(item, index) {
   const signal = item.importance >= 8 ? 'MAJOR UPDATE' : item.importance >= 6 ? 'IMPORTANT' : 'TECH UPDATE';
   const imageSource = item.image_url || `/image?url=${encodeURIComponent(item.url)}`;
   const fallback = `<div class="post-image image-fallback" aria-label="${escapeHtml(item.category)} technology visual"><span>${icon}</span><small>${escapeHtml(item.category)}</small></div>`;
-  const image = `<img class="post-image" src="${escapeHtml(imageSource)}" alt="${escapeHtml(item.image_alt || item.title)}" loading="lazy" onerror="this.outerHTML=${JSON.stringify(fallback)}">`;
+  const image = `<img class="post-image" src="${escapeHtml(imageSource)}" alt="${escapeHtml(item.image_alt || item.title)}" loading="lazy" onerror='this.onerror=null; this.parentElement.innerHTML=${JSON.stringify(fallback)}'>`;
 
   return `
     <article class="post" id="post-${index}">
