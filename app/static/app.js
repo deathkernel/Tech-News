@@ -3,163 +3,210 @@ const status = document.getElementById('status');
 const search = document.getElementById('search');
 const category = document.getElementById('category');
 const importance = document.getElementById('importance');
+const refresh = document.getElementById('refresh');
 
 let items = [];
 
-const categoryInfo = {
-  AI: {
-    icon: '🤖',
-    why: 'AI capabilities are moving quickly. Track releases and model changes that can affect what developers build next.',
-    code: 'from openai import OpenAI\n\nclient = OpenAI()\nresponse = client.responses.create(\n    model="latest-model",\n    input="Explain the new capability in 3 bullets."\n)'
-  },
-  LLMs: {
-    icon: '🧠',
-    why: 'Model updates can change cost, latency, context limits and the way AI applications are designed.',
-    code: 'response = client.responses.create(\n    model="latest-model",\n    input="Summarize this technology update."\n)'
-  },
-  Programming: {
-    icon: '💻',
-    why: 'Language, framework and compiler changes can directly affect your next project and development workflow.',
-    code: 'def use_new_feature(data):\n    result = transform(data)\n    return result'
-  },
-  'Cyber Security': {
-    icon: '🔐',
-    why: 'Security changes can require immediate patches, dependency updates or changes to how systems are deployed.',
-    code: '# Check dependencies regularly\npip list --outdated\npip-audit'
-  },
-  Cloud: {
-    icon: '☁️',
-    why: 'Cloud platform changes can introduce new infrastructure options, performance gains or migration decisions.',
-    code: 'resource "cloud_service" "app" {\n  name = "jarvis-tech-news"\n}'
-  },
-  DevOps: {
-    icon: '⚙️',
-    why: 'DevOps updates can improve deployment speed, reliability and developer experience.',
-    code: 'docker build -t jarvis-news .\ndocker run -p 8000:8000 jarvis-news'
-  },
-  'Open Source': {
-    icon: '📦',
-    why: 'Open-source releases can become useful building blocks for future projects and workflows.',
-    code: 'git clone https://github.com/example/project.git\ncd project\npython -m pip install -r requirements.txt'
-  },
-  Hardware: {
-    icon: '🖥️',
-    why: 'Hardware changes affect compute cost, AI workloads, local development and system performance.',
-    code: 'import platform\nprint(platform.processor())\nprint(platform.machine())'
-  },
-  'Developer Tools': {
-    icon: '🛠️',
-    why: 'Developer-tool releases can remove repetitive work and change how software is built and tested.',
-    code: 'npm install new-developer-tool\nnpx new-developer-tool init'
-  }
-};
-
-const fallbackInfo = {
-  icon: '⚡',
-  why: 'This update was selected because it contains technology information that may be useful for future projects.',
-  code: '# Start investigating the new technology\nprint("Explore the new capability")'
+const categoryIcons = {
+  AI: '🤖',
+  LLMs: '🧠',
+  Programming: '💻',
+  'Cyber Security': '🔐',
+  Cloud: '☁️',
+  Linux: '🐧',
+  Windows: '🪟',
+  Apple: '🍎',
+  Android: '📱',
+  'Web technologies': '🌐',
+  Databases: '🗄️',
+  DevOps: '⚙️',
+  'Open Source': '📦',
+  Research: '🧪',
+  Hardware: '🖥️',
+  'GPU/CPU': '⚡',
+  'Developer tools': '🛠️'
 };
 
 async function loadCategories() {
-  const response = await fetch('/categories');
-  const data = await response.json();
-  for (const name of data.categories) {
-    const option = document.createElement('option');
-    option.value = name;
-    option.textContent = name;
-    category.appendChild(option);
+  try {
+    const response = await fetch('/categories');
+    if (!response.ok) throw new Error('Category request failed');
+
+    const data = await response.json();
+    category.innerHTML = '<option value="">All topics</option>';
+
+    for (const name of data.categories) {
+      const option = document.createElement('option');
+      option.value = name;
+      option.textContent = name;
+      category.appendChild(option);
+    }
+  } catch {
+    category.innerHTML = '<option value="">All topics</option>';
   }
 }
 
 async function loadNews() {
-  status.textContent = 'Scanning technology sources...';
+  setLoading(true);
+  status.textContent = 'Finding stories...';
+
   try {
-    const params = new URLSearchParams({ minimum_importance: importance.value });
+    const params = new URLSearchParams({
+      minimum_importance: importance.value
+    });
+
     const response = await fetch(`/news?${params}`);
     if (!response.ok) throw new Error('News request failed');
+
     items = await response.json();
     render();
-  } catch (error) {
-    status.textContent = 'Could not load the feed. Try refresh again.';
-    feed.innerHTML = '<div class="empty">JARVIS could not reach the news sources right now.</div>';
+  } catch {
+    status.textContent = 'Could not load news';
+    feed.innerHTML = '<div class="empty">JARVIS could not reach the news sources right now. Try refresh.</div>';
+  } finally {
+    setLoading(false);
   }
 }
 
 function render() {
   const query = search.value.toLowerCase().trim();
   const selected = category.value.toLowerCase();
+
   const filtered = items.filter(item => {
-    const matchesText = !query || `${item.title} ${item.summary} ${item.companies.join(' ')}`.toLowerCase().includes(query);
+    const searchable = [
+      item.title,
+      item.summary,
+      item.source,
+      ...(item.companies || [])
+    ].join(' ').toLowerCase();
+
+    const matchesText = !query || searchable.includes(query);
     const matchesCategory = !selected || item.category.toLowerCase() === selected;
     return matchesText && matchesCategory;
   });
 
-  status.textContent = `${filtered.length} future-useful updates`;
-  feed.innerHTML = filtered.map((item, index) => renderCard(item, index)).join('');
-  document.querySelectorAll('.copy-code').forEach(button => {
-    button.addEventListener('click', async () => {
-      const code = button.closest('.card').querySelector('code').textContent;
-      await navigator.clipboard.writeText(code);
-      button.textContent = '✓ Copied';
-      setTimeout(() => { button.textContent = 'Copy code'; }, 1200);
-    });
-  });
+  status.textContent = `${filtered.length} ${filtered.length === 1 ? 'story' : 'stories'}`;
+
+  if (!filtered.length) {
+    feed.innerHTML = '<div class="empty">No stories match these filters.</div>';
+    return;
+  }
+
+  feed.innerHTML = filtered.map((item, index) => renderPost(item, index)).join('');
 }
 
-function renderCard(item, index) {
-  const info = categoryInfo[item.category] || fallbackInfo;
-  const summary = stripHtml(item.summary).replace(/\s+/g, ' ').trim();
-  const companies = item.companies.length ? item.companies.join(' · ') : 'Technology Radar';
-  const published = item.published_at ? formatDate(item.published_at) : 'Just now';
-  const level = item.importance >= 8 ? 'HIGH IMPACT' : item.importance >= 6 ? 'IMPORTANT' : 'WATCH';
+function renderPost(item, index) {
+  const summary = cleanText(item.summary) || 'A new technology update worth knowing about.';
+  const shortSummary = summary.length > 330 ? `${summary.slice(0, 327).trim()}...` : summary;
+  const companies = item.companies?.length ? item.companies.join(' · ') : '';
+  const icon = categoryIcons[item.category] || '⚡';
+  const date = item.published_at ? formatDate(item.published_at) : 'Today';
+  const signal = item.importance >= 8 ? 'MAJOR UPDATE' : item.importance >= 6 ? 'IMPORTANT' : 'TECH UPDATE';
 
   return `
-    <article class="card" id="story-${index}">
-      <div class="card-top">
-        <div class="category-badge">${info.icon} ${escapeHtml(item.category)}</div>
-        <div class="impact-badge impact-${level.toLowerCase().replace(' ', '-')}">${level}</div>
-      </div>
+    <article class="post" id="post-${index}">
+      <div class="post-glow"></div>
 
-      <div class="source-line">
-        <span>${escapeHtml(item.source)}</span>
-        <span>•</span>
-        <span>${escapeHtml(published)}</span>
+      <header class="post-header">
+        <div class="post-brand">
+          <span class="post-mark">J</span>
+          <div>
+            <strong>JARVIS</strong>
+            <span>TECH INTELLIGENCE</span>
+          </div>
+        </div>
+        <span class="post-date">${escapeHtml(date)}</span>
+      </header>
+
+      <div class="post-topic">
+        <span class="topic-icon">${icon}</span>
+        <span>${escapeHtml(item.category)}</span>
+        <i></i>
+        <span>${signal}</span>
       </div>
 
       <h2>${escapeHtml(item.title)}</h2>
-      <p class="summary">${escapeHtml(summary || 'A new technology update worth tracking.')}</p>
 
-      <div class="section-label">WHY IT MATTERS</div>
-      <p class="why">${escapeHtml(info.why)}</p>
+      <div class="divider"></div>
 
-      <div class="section-label code-label-row">
-        <span>DEVELOPER EXAMPLE</span>
-        <button class="copy-code" type="button">Copy code</button>
-      </div>
-      <pre><code>${escapeHtml(info.code)}</code></pre>
+      <section class="story">
+        <span class="label">WHAT HAPPENED</span>
+        <p>${escapeHtml(shortSummary)}</p>
+      </section>
 
-      <div class="card-footer">
-        <div class="company-tags">${escapeHtml(companies)}</div>
-        <div class="score">${item.importance}/10 relevance</div>
-      </div>
-      <div class="source-note">Source: ${escapeHtml(item.source)} · JARVIS Technology Intelligence</div>
+      <section class="story why-story">
+        <span class="label">WHY IT MATTERS</span>
+        <p>${escapeHtml(buildWhy(item))}</p>
+      </section>
+
+      <footer class="post-footer">
+        <div>
+          <span class="source">${escapeHtml(item.source)}</span>
+          ${companies ? `<span class="companies">${escapeHtml(companies)}</span>` : ''}
+        </div>
+        <span class="handle">@JARVIS</span>
+      </footer>
     </article>`;
+}
+
+function buildWhy(item) {
+  const category = item.category;
+  const companies = item.companies?.length ? item.companies.join(', ') : 'the technology ecosystem';
+
+  const reasons = {
+    AI: `AI is changing quickly, and this update from ${companies} could influence the tools developers use next.`,
+    LLMs: `Model changes can affect capabilities, cost, speed and how AI applications are built.`,
+    Programming: `Language and developer-tool changes can directly affect how software is built and maintained.`,
+    'Cyber Security': `Security updates can affect real systems immediately, especially when vulnerabilities or patches are involved.`,
+    Cloud: `Cloud platform changes can introduce new capabilities, infrastructure choices and development workflows.`,
+    'Open Source': `Open-source releases can become useful building blocks for future projects and developer workflows.`,
+    Research: `Research developments can become the foundation for future products, models and engineering techniques.`,
+    Hardware: `Hardware changes can affect performance, AI workloads, local development and computing costs.`
+  };
+
+  return reasons[category] || `This is a technology change worth tracking because it may affect future products, tools or developer workflows.`;
+}
+
+function cleanText(value) {
+  return String(value || '')
+    .replace(/<[^>]*>/g, ' ')
+    .replace(/&nbsp;/gi, ' ')
+    .replace(/\s+/g, ' ')
+    .trim();
 }
 
 function formatDate(value) {
   const date = new Date(value);
-  if (Number.isNaN(date.getTime())) return 'Recently';
-  return date.toLocaleString([], { month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' });
+  if (Number.isNaN(date.getTime())) return 'Today';
+
+  return date.toLocaleDateString([], {
+    month: 'short',
+    day: 'numeric',
+    year: 'numeric'
+  });
 }
 
-function stripHtml(value) { return value.replace(/<[^>]*>/g, ''); }
 function escapeHtml(value) {
-  return String(value).replace(/[&<>'"]/g, c => ({ '&':'&amp;', '<':'&lt;', '>':'&gt;', "'":'&#39;', '"':'&quot;' }[c]));
+  return String(value).replace(/[&<>'"]/g, character => ({
+    '&': '&amp;',
+    '<': '&lt;',
+    '>': '&gt;',
+    "'": '&#39;',
+    '"': '&quot;'
+  })[character]);
+}
+
+function setLoading(loading) {
+  refresh.disabled = loading;
+  refresh.textContent = loading ? 'Updating...' : 'Refresh';
 }
 
 search.addEventListener('input', render);
 category.addEventListener('change', render);
 importance.addEventListener('change', loadNews);
-document.getElementById('refresh').addEventListener('click', loadNews);
+refresh.addEventListener('click', loadNews);
 
-(async () => { await loadCategories(); await loadNews(); })();
+(async () => {
+  await loadCategories();
+  await loadNews();
+})();
