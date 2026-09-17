@@ -3,35 +3,56 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="theme-color" content="#090909">
-  <title>JARVIS — Tech News</title>
+  <meta name="theme-color" content="#07090d">
+  <title>JARVIS — Tech Intelligence</title>
   <link rel="stylesheet" href="/static/style.css">
 </head>
 <body>
+  <div class="ambient ambient-one"></div>
+  <div class="ambient ambient-two"></div>
+
   <header class="topbar">
     <div class="brand">
-      <span class="brand-dot"></span>
+      <span class="brand-orbit"><span></span></span>
       <div>
         <div class="brand-name">JARVIS</div>
-        <div class="brand-sub">TECH NEWS</div>
+        <div class="brand-sub">TECH INTELLIGENCE</div>
       </div>
     </div>
-    <button id="refresh" class="refresh" type="button">Refresh</button>
+    <div class="top-actions">
+      <span class="live"><i></i> LIVE FEED</span>
+      <button id="refresh" class="refresh" type="button"><span>↻</span> Refresh</button>
+    </div>
   </header>
 
   <main>
-    <section class="intro">
-      <div>
-        <p class="kicker">TODAY IN TECHNOLOGY</p>
-        <h1>News worth<br><em>posting.</em></h1>
+    <section class="hero">
+      <div class="hero-copy">
+        <p class="eyebrow"><span>01</span> SIGNALS WORTH SHARING</p>
+        <h1>Know what's<br><em>next.</em></h1>
+        <p class="hero-text">JARVIS scans the technology world and turns important updates into clean, ready-to-post stories.</p>
       </div>
-      <p class="intro-copy">JARVIS finds the technology updates that are actually worth sharing.</p>
+      <div class="hero-side">
+        <div class="radar">
+          <div class="radar-ring ring-a"></div>
+          <div class="radar-ring ring-b"></div>
+          <div class="radar-sweep"></div>
+          <span class="radar-dot dot-a"></span>
+          <span class="radar-dot dot-b"></span>
+          <span class="radar-dot dot-c"></span>
+          <strong>J</strong>
+        </div>
+        <div class="hero-meta">
+          <span>AI · CLOUD · SECURITY · DEV</span>
+          <small>FILTERED BY FUTURE VALUE</small>
+        </div>
+      </div>
     </section>
 
     <section class="controls" aria-label="News controls">
       <label class="search-wrap">
         <span>⌕</span>
-        <input id="search" aria-label="Search news" placeholder="Search stories...">
+        <input id="search" aria-label="Search news" placeholder="Search the signal feed...">
       </label>
       <select id="category" aria-label="Filter by category">
         <option value="">All topics</option>
@@ -44,8 +65,11 @@
     </section>
 
     <div class="feed-bar">
-      <span class="feed-title">LATEST POSTS</span>
-      <span id="status">Loading...</span>
+      <div>
+        <span class="feed-title">JARVIS SIGNAL FEED</span>
+        <span class="feed-sub">READY FOR YOUR NEXT POST</span>
+      </div>
+      <span id="status">Scanning...</span>
     </div>
 
     <section id="feed" class="feed" aria-live="polite"></section>
