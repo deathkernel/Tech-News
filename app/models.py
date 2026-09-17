@@ -1,5 +1,5 @@
 from datetime import datetime
-from pydantic import BaseModel, HttpUrl
+from pydantic import BaseModel, Field, HttpUrl
 
 
 class NewsItem(BaseModel):
@@ -8,7 +8,7 @@ class NewsItem(BaseModel):
     source: str
     published_at: datetime | None = None
     category: str
-    companies: list[str] = []
+    companies: list[str] = Field(default_factory=list)
     summary: str = ""
     importance: int = 0
-    tags: list[str] = []
+    tags: list[str] = Field(default_factory=list)
