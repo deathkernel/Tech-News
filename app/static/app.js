@@ -97,11 +97,14 @@ function render() {
 
 function renderPost(item, index) {
   const summary = cleanText(item.summary) || 'A new technology update worth knowing about.';
-  const shortSummary = summary.length > 330 ? `${summary.slice(0, 327).trim()}...` : summary;
+  const shortSummary = summary.length > 270 ? `${summary.slice(0, 267).trim()}...` : summary;
   const companies = item.companies?.length ? item.companies.join(' · ') : '';
   const icon = categoryIcons[item.category] || '⚡';
   const date = item.published_at ? formatDate(item.published_at) : 'Today';
   const signal = item.importance >= 8 ? 'MAJOR UPDATE' : item.importance >= 6 ? 'IMPORTANT' : 'TECH UPDATE';
+  const image = item.image_url
+    ? `<img class="post-image" src="${escapeHtml(item.image_url)}" alt="${escapeHtml(item.image_alt || item.title)}" loading="lazy" onerror="this.parentElement.classList.add('image-failed'); this.remove();">`
+    : `<div class="post-image image-fallback" aria-label="${escapeHtml(item.category)} technology visual"><span>${icon}</span><small>${escapeHtml(item.category)}</small></div>`;
 
   return `
     <article class="post" id="post-${index}">
@@ -112,7 +115,7 @@ function renderPost(item, index) {
           <span class="post-mark">J</span>
           <div>
             <strong>JARVIS</strong>
-            <span>TECH INTELLIGENCE</span>
+            <span>TECH NEWS</span>
           </div>
         </div>
         <span class="post-date">${escapeHtml(date)}</span>
@@ -125,9 +128,11 @@ function renderPost(item, index) {
         <span>${signal}</span>
       </div>
 
-      <h2>${escapeHtml(item.title)}</h2>
+      <div class="media-frame">
+        ${image}
+      </div>
 
-      <div class="divider"></div>
+      <h2>${escapeHtml(item.title)}</h2>
 
       <section class="story">
         <span class="label">WHAT HAPPENED</span>
@@ -138,6 +143,11 @@ function renderPost(item, index) {
         <span class="label">WHY IT MATTERS</span>
         <p>${escapeHtml(buildWhy(item))}</p>
       </section>
+
+      <div class="takeaway">
+        <span class="label">KEY TAKEAWAY</span>
+        <strong>${escapeHtml(buildTakeaway(item))}</strong>
+      </div>
 
       <footer class="post-footer">
         <div>
@@ -155,16 +165,31 @@ function buildWhy(item) {
 
   const reasons = {
     AI: `AI is changing quickly, and this update from ${companies} could influence the tools developers use next.`,
-    LLMs: `Model changes can affect capabilities, cost, speed and how AI applications are built.`,
-    Programming: `Language and developer-tool changes can directly affect how software is built and maintained.`,
-    'Cyber Security': `Security updates can affect real systems immediately, especially when vulnerabilities or patches are involved.`,
-    Cloud: `Cloud platform changes can introduce new capabilities, infrastructure choices and development workflows.`,
-    'Open Source': `Open-source releases can become useful building blocks for future projects and developer workflows.`,
-    Research: `Research developments can become the foundation for future products, models and engineering techniques.`,
-    Hardware: `Hardware changes can affect performance, AI workloads, local development and computing costs.`
+    LLMs: 'Model changes can affect capabilities, cost, speed and how AI applications are built.',
+    Programming: 'Language and developer-tool changes can directly affect how software is built and maintained.',
+    'Cyber Security': 'Security updates can affect real systems immediately, especially when vulnerabilities or patches are involved.',
+    Cloud: 'Cloud platform changes can introduce new capabilities, infrastructure choices and development workflows.',
+    'Open Source': 'Open-source releases can become useful building blocks for future projects and developer workflows.',
+    Research: 'Research developments can become the foundation for future products, models and engineering techniques.',
+    Hardware: 'Hardware changes can affect performance, AI workloads, local development and computing costs.'
   };
 
-  return reasons[category] || `This is a technology change worth tracking because it may affect future products, tools or developer workflows.`;
+  return reasons[category] || 'This is a technology change worth tracking because it may affect future products, tools or developer workflows.';
+}
+
+function buildTakeaway(item) {
+  const takeaways = {
+    AI: 'Track this one — it could shape what developers build with AI next.',
+    LLMs: 'Watch the model capability, speed and cost changes before choosing your next stack.',
+    Programming: 'A small developer-tool change can become a big workflow change over time.',
+    'Cyber Security': 'If you use the affected technology, check for patches and security guidance.',
+    Cloud: 'Keep an eye on how this changes cloud architecture, tooling or costs.',
+    'Open Source': 'Worth watching if you build with open-source software or developer infrastructure.',
+    Research: 'Today’s research can become tomorrow’s developer or product capability.',
+    Hardware: 'Hardware changes can directly influence performance and the cost of computing.'
+  };
+
+  return takeaways[item.category] || 'Worth tracking for its potential impact on future technology and developer workflows.';
 }
 
 function cleanText(value) {
