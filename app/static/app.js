@@ -102,9 +102,9 @@ function renderPost(item, index) {
   const icon = categoryIcons[item.category] || '⚡';
   const date = item.published_at ? formatDate(item.published_at) : 'Today';
   const signal = item.importance >= 8 ? 'MAJOR UPDATE' : item.importance >= 6 ? 'IMPORTANT' : 'TECH UPDATE';
-  const image = item.image_url
-    ? `<img class="post-image" src="${escapeHtml(item.image_url)}" alt="${escapeHtml(item.image_alt || item.title)}" loading="lazy" onerror="this.parentElement.classList.add('image-failed'); this.remove();">`
-    : `<div class="post-image image-fallback" aria-label="${escapeHtml(item.category)} technology visual"><span>${icon}</span><small>${escapeHtml(item.category)}</small></div>`;
+  const imageSource = item.image_url || `/image?url=${encodeURIComponent(item.url)}`;
+  const fallback = `<div class="post-image image-fallback" aria-label="${escapeHtml(item.category)} technology visual"><span>${icon}</span><small>${escapeHtml(item.category)}</small></div>`;
+  const image = `<img class="post-image" src="${escapeHtml(imageSource)}" alt="${escapeHtml(item.image_alt || item.title)}" loading="lazy" onerror="this.outerHTML=${JSON.stringify(fallback)}">`;
 
   return `
     <article class="post" id="post-${index}">
