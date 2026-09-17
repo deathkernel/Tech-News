@@ -1,3 +1,5 @@
+from datetime import datetime, timezone
+
 from .filters import classify, importance, normalize_title
 from .models import NewsItem
 from .sources import fetch_all
@@ -34,5 +36,11 @@ async def collect_news(min_importance: int = 4) -> list[NewsItem]:
             importance=score,
         ))
 
-    result.sort(key=lambda news: (news.importance, news.published_at or 0), reverse=True)
+    result.sort(
+        key=lambda news: (
+            news.importance,
+            news.published_at or datetime.min.replace(tzinfo=timezone.utc),
+        ),
+        reverse=True,
+    )
     return result
