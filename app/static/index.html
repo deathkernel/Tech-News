@@ -2,51 +2,53 @@
 <html lang="en">
 <head>
   <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width,initial-scale=1">
-  <meta name="theme-color" content="#050812">
-  <title>JARVIS — Tech Intelligence Cards</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#090909">
+  <title>JARVIS — Tech News</title>
   <link rel="stylesheet" href="/static/style.css">
 </head>
 <body>
   <header class="topbar">
     <div class="brand">
-      <div class="brand-mark">J</div>
+      <span class="brand-dot"></span>
       <div>
-        <span class="eyebrow">JARVIS</span>
-        <h1>Tech Intelligence</h1>
+        <div class="brand-name">JARVIS</div>
+        <div class="brand-sub">TECH NEWS</div>
       </div>
     </div>
-    <button id="refresh" class="refresh">↻ Refresh</button>
+    <button id="refresh" class="refresh" type="button">Refresh</button>
   </header>
 
-  <section class="hero">
-    <div>
-      <span class="hero-kicker">TECH RADAR / FUTURE SIGNALS</span>
-      <h2>One story. <span>Everything you need.</span></h2>
-      <p>News, why it matters, developer impact and a practical code example — inside one card.</p>
-    </div>
-    <div class="live-pill"><i></i> LIVE INTELLIGENCE</div>
-  </section>
-
-  <section class="controls">
-    <input id="search" aria-label="Search" placeholder="Search AI, Python, NVIDIA, CVE, cloud...">
-    <select id="category" aria-label="Category"><option value="">All categories</option></select>
-    <select id="importance" aria-label="Importance">
-      <option value="4">Important+</option>
-      <option value="6">High priority</option>
-      <option value="8">Critical only</option>
-    </select>
-  </section>
-
   <main>
-    <div class="feed-head">
+    <section class="intro">
       <div>
-        <span class="eyebrow">CURATED FEED</span>
-        <h3>What matters in tech</h3>
+        <p class="kicker">TODAY IN TECHNOLOGY</p>
+        <h1>News worth<br><em>posting.</em></h1>
       </div>
-      <div id="status">Loading...</div>
+      <p class="intro-copy">JARVIS finds the technology updates that are actually worth sharing.</p>
+    </section>
+
+    <section class="controls" aria-label="News controls">
+      <label class="search-wrap">
+        <span>⌕</span>
+        <input id="search" aria-label="Search news" placeholder="Search stories...">
+      </label>
+      <select id="category" aria-label="Filter by category">
+        <option value="">All topics</option>
+      </select>
+      <select id="importance" aria-label="Filter by importance">
+        <option value="4">Important+</option>
+        <option value="6">High impact</option>
+        <option value="8">Major only</option>
+      </select>
+    </section>
+
+    <div class="feed-bar">
+      <span class="feed-title">LATEST POSTS</span>
+      <span id="status">Loading...</span>
     </div>
-    <section id="feed" class="feed"></section>
+
+    <section id="feed" class="feed" aria-live="polite"></section>
   </main>
 
   <script src="/static/app.js"></script>
