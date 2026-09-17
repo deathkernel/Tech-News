@@ -1,4 +1,8 @@
+from pathlib import Path
+
 from fastapi import FastAPI, Query
+from fastapi.responses import FileResponse
+from fastapi.staticfiles import StaticFiles
 
 from .config import CATEGORIES, RSS_SOURCES
 from .models import NewsItem
@@ -10,14 +14,18 @@ app = FastAPI(
     description="Technology intelligence and future-useful news collection API.",
 )
 
+STATIC_DIR = Path(__file__).parent / "static"
+app.mount("/static", StaticFiles(directory=STATIC_DIR), name="static")
 
-@app.get("/")
-async def root():
-    return {
-        "name": "JARVIS Tech-News",
-        "status": "online",
-        "purpose": "Collect and filter future-useful technology news",
-    }
+
+@app.get("/", include_in_schema=False)
+async def dashboard():
+    return FileResponse(STATIC_DIR / "index.html")
+
+
+@app.get("/health")
+async def health():
+    return {"name": "JARVIS Tech-News", "status": "online"}
 
 
 @app.get("/categories")
