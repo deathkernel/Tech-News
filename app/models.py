@@ -3,6 +3,12 @@ from datetime import datetime
 from pydantic import BaseModel, Field, HttpUrl
 
 
+class PodcastHighlight(BaseModel):
+    text: str
+    reason: str = ""
+    timestamp: str | None = None
+
+
 class NewsItem(BaseModel):
     title: str
     url: HttpUrl
@@ -15,3 +21,5 @@ class NewsItem(BaseModel):
     tags: list[str] = Field(default_factory=list)
     image_url: HttpUrl | None = None
     image_alt: str = ""
+    content_type: str = "news"
+    highlights: list[PodcastHighlight] = Field(default_factory=list)
