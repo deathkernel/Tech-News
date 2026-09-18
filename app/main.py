@@ -28,7 +28,7 @@ async def lifespan(app: FastAPI):
     yield
 
 
-app = FastAPI(title="Tech-News API", version="1.6.0", description="Technology news and future-useful information collection API.", lifespan=lifespan)
+app = FastAPI(title="Tech-News API", version="1.6.1", description="Technology news and future-useful information collection API.", lifespan=lifespan)
 STATIC_DIR = Path(__file__).parent / "static"
 COMPANY_DATA = STATIC_DIR.parent / "data" / "companies.json"
 app.mount("/static", StaticFiles(directory=STATIC_DIR), name="static")
@@ -123,7 +123,7 @@ async def company(name:str=Query(...,min_length=1), user=Depends(require_user)):
     return {"company":match,"stories":stories[:12],"generated_at":datetime.now(timezone.utc)}
 
 @app.get("/intelligence")
-async def intelligence(minimum_importance:int=Query(default=4,ge=0,le=10), user=Depends(require_user)): return await intelligence_snapshot(minimum_importance)
+async def intelligence(minimum_importance:int=Query(default=0,ge=0,le=10), user=Depends(require_user)): return await intelligence_snapshot(minimum_importance)
 
 @app.get("/top10")
 async def top10(minimum_importance:int=Query(default=4,ge=0,le=10), user=Depends(require_user)): return await daily_top10(minimum_importance)
