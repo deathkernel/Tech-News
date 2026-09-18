@@ -1,4 +1,3 @@
-import hashlib
 import os
 import secrets
 import sqlite3
@@ -6,8 +5,8 @@ from datetime import datetime, timedelta, timezone
 from pathlib import Path
 
 import jwt
-from fastapi import Cookie, Header, HTTPException, status
 from pwdlib import PasswordHash
+from fastapi import HTTPException, status
 
 DATABASE_URL = os.getenv("DATABASE_URL", "").strip()
 SECRET_KEY = os.getenv("JARVIS_SECRET_KEY", "").strip()
@@ -130,7 +129,7 @@ def csrf_token():
     return secrets.token_urlsafe(32)
 
 
-def current_user(session: str | None, csrf_cookie: str | None, csrf_header: str | None):
+def current_user(session: str | None, csrf_cookie: str | None = None, csrf_header: str | None = None, require_csrf: bool = False):
     if not session:
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Authentication required")
     try:
@@ -138,7 +137,7 @@ def current_user(session: str | None, csrf_cookie: str | None, csrf_header: str 
         user_id = int(payload.get("sub", "0"))
     except (jwt.InvalidTokenError, ValueError, TypeError):
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid or expired session")
-    if not csrf_cookie or not csrf_header or not secrets.compare_digest(csrf_cookie, csrf_header):
+    if require_csrf and (not csrf_cookie or not csrf_header or not secrets.compare_digest(csrf_cookie, csrf_header)):
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="CSRF validation failed")
     conn = _connect()
     try:
