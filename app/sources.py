@@ -6,7 +6,7 @@ import re
 import feedparser
 import httpx
 
-from .config import PUBLIC_APIS, RSS_SOURCES
+from .config import CURATED_GITHUB_OWNERS, PUBLIC_APIS, RSS_SOURCES
 
 USER_AGENT = "JARVIS-Tech-News/1.0"
 PODCAST_QUERIES = [
@@ -54,21 +54,8 @@ def podcast_highlights(summary: str, title: str) -> list[dict]:
     text = re.sub(r"\s+", " ", html.unescape(summary or "")).strip()
     sentences = [s.strip() for s in re.split(r"(?<=[.!?])\s+", text) if len(s.strip()) >= 45]
     keywords = ("AI", "agent", "model", "future", "computer", "robot", "security", "open source", "GPU", "developer", "AGI", "technology")
-    ranked = sorted(
-        sentences,
-        key=lambda s: (sum(k.lower() in s.lower() for k in keywords), min(len(s), 180)),
-        reverse=True,
-    )
-    highlights = []
-    for sentence in ranked[:3]:
-        highlights.append({
-            "text": sentence[:220],
-            "reason": "JARVIS picked this as a high-signal technology point from the episode description.",
-            "timestamp": None,
-        })
-    if not highlights and text:
-        highlights.append({"text": text[:220], "reason": "Best available episode summary.", "timestamp": None})
-    return highlights
+    ranked = sorted(sentences, key=lambda s: (sum(k.lower() in s.lower() for k in keywords), min(len(s), 180)), reverse=True)
+    return [{"text": sentence[:220], "reason": "JARVIS picked this as a high-signal technology point from the episode description.", "timestamp": None} for sentence in ranked[:3]] or ([{"text": text[:220], "reason": "Best available episode summary.", "timestamp": None}] if text else [])
 
 
 async def fetch_feed(source_name: str, feed_url: str, client: httpx.AsyncClient) -> list[dict]:
@@ -85,11 +72,7 @@ async def fetch_feed(source_name: str, feed_url: str, client: httpx.AsyncClient)
                 published = datetime(*entry.updated_parsed[:6], tzinfo=timezone.utc)
             title = entry.get("title", "").strip()
             if title:
-                items.append({
-                    "title": title, "url": entry.get("link", ""), "source": source_name,
-                    "published_at": published, "summary": entry.get("summary", "").strip(),
-                    "image_url": extract_image_url(entry), "image_alt": title,
-                })
+                items.append({"title": title, "url": entry.get("link", ""), "source": source_name, "published_at": published, "summary": entry.get("summary", "").strip(), "image_url": extract_image_url(entry), "image_alt": title})
         return items
     except Exception:
         return []
@@ -98,8 +81,7 @@ async def fetch_feed(source_name: str, feed_url: str, client: httpx.AsyncClient)
 async def fetch_podcasts(client: httpx.AsyncClient) -> list[dict]:
     async def one(query: str):
         try:
-            url = "https://news.google.com/rss/search"
-            response = await client.get(url, params={"q": query, "hl": "en-US", "gl": "US", "ceid": "US:en"})
+            response = await client.get("https://news.google.com/rss/search", params={"q": query, "hl": "en-US", "gl": "US", "ceid": "US:en"})
             response.raise_for_status()
             parsed = feedparser.parse(response.text)
             result = []
@@ -109,17 +91,7 @@ async def fetch_podcasts(client: httpx.AsyncClient) -> list[dict]:
                 link = entry.get("link", "")
                 if not title or not link:
                     continue
-                result.append({
-                    "title": f"Podcast / Interview: {title}",
-                    "url": link,
-                    "source": "Podcast Discovery",
-                    "published_at": datetime(*entry.published_parsed[:6], tzinfo=timezone.utc) if getattr(entry, "published_parsed", None) else None,
-                    "summary": summary,
-                    "image_url": None,
-                    "image_alt": title,
-                    "content_type": "podcast",
-                    "highlights": podcast_highlights(summary, title),
-                })
+                result.append({"title": f"Podcast / Interview: {title}", "url": link, "source": "Podcast Discovery", "published_at": datetime(*entry.published_parsed[:6], tzinfo=timezone.utc) if getattr(entry, "published_parsed", None) else None, "summary": summary, "image_url": None, "image_alt": title, "content_type": "podcast", "highlights": podcast_highlights(summary, title)})
             return result
         except Exception:
             return []
@@ -140,12 +112,7 @@ async def fetch_hacker_news(client: httpx.AsyncClient) -> list[dict]:
         for story in stories:
             if not story or story.get("type") != "story" or not story.get("title") or not story.get("url"):
                 continue
-            result.append({
-                "title": html.unescape(story["title"]), "url": story["url"], "source": "Hacker News",
-                "published_at": datetime.fromtimestamp(story.get("time", 0), tz=timezone.utc),
-                "summary": f"Hacker News discussion: {story.get('score', 0)} points, {story.get('descendants', 0)} comments.",
-                "image_url": None, "image_alt": story["title"],
-            })
+            result.append({"title": html.unescape(story["title"]), "url": story["url"], "source": "Hacker News", "published_at": datetime.fromtimestamp(story.get("time", 0), tz=timezone.utc), "summary": f"Hacker News discussion: {story.get('score', 0)} points, {story.get('descendants', 0)} comments.", "image_url": None, "image_alt": story["title"]})
         return result
     except Exception:
         return []
@@ -153,18 +120,16 @@ async def fetch_hacker_news(client: httpx.AsyncClient) -> list[dict]:
 
 async def fetch_github(client: httpx.AsyncClient) -> list[dict]:
     try:
-        params = {"q": "stars:>1000 pushed:>2026-01-01", "sort": "updated", "order": "desc", "per_page": 20}
+        # Query GitHub broadly by activity, then enforce the JARVIS curated-owner gate.
+        params = {"q": "stars:>1000 pushed:>2026-01-01", "sort": "updated", "order": "desc", "per_page": 100}
         response = await client.get(PUBLIC_APIS["GitHub"] + "search/repositories", params=params)
         response.raise_for_status()
         result = []
         for repo in response.json().get("items", []):
-            result.append({
-                "title": f"GitHub project update: {repo['full_name']}",
-                "url": repo["html_url"], "source": "GitHub",
-                "published_at": parse_date(repo.get("pushed_at")),
-                "summary": repo.get("description") or "A popular open-source repository received an update.",
-                "image_url": repo.get("owner", {}).get("avatar_url"), "image_alt": repo["full_name"],
-            })
+            owner = (repo.get("owner", {}).get("login") or "").lower()
+            if owner not in {x.lower() for x in CURATED_GITHUB_OWNERS}:
+                continue
+            result.append({"title": f"GitHub project update: {repo['full_name']}", "url": repo["html_url"], "source": "GitHub", "published_at": parse_date(repo.get("pushed_at")), "summary": repo.get("description") or "A high-signal technology repository received an update.", "image_url": repo.get("owner", {}).get("avatar_url"), "image_alt": repo["full_name"], "github_owner": repo.get("owner", {}).get("login"), "github_stars": repo.get("stargazers_count", 0)})
         return result
     except Exception:
         return []
@@ -182,12 +147,7 @@ async def fetch_nvd(client: httpx.AsyncClient) -> list[dict]:
             description = next((x.get("value") for x in descriptions if x.get("lang") == "en"), "")
             if not cve_id:
                 continue
-            result.append({
-                "title": f"Security advisory: {cve_id}",
-                "url": f"https://nvd.nist.gov/vuln/detail/{cve_id}", "source": "NVD",
-                "published_at": parse_date(cve.get("published")), "summary": description,
-                "image_url": None, "image_alt": cve_id,
-            })
+            result.append({"title": f"Security advisory: {cve_id}", "url": f"https://nvd.nist.gov/vuln/detail/{cve_id}", "source": "NVD", "published_at": parse_date(cve.get("published")), "summary": description, "image_url": None, "image_alt": cve_id})
         return result
     except Exception:
         return []
@@ -200,13 +160,7 @@ async def fetch_arxiv(client: httpx.AsyncClient) -> list[dict]:
         parsed = feedparser.parse(response.text)
         result = []
         for entry in parsed.entries:
-            result.append({
-                "title": entry.get("title", "").replace("\n", " ").strip(),
-                "url": entry.get("link", ""), "source": "arXiv",
-                "published_at": parse_date(entry.get("published")),
-                "summary": re.sub(r"\s+", " ", entry.get("summary", "")).strip(),
-                "image_url": None, "image_alt": entry.get("title", ""),
-            })
+            result.append({"title": entry.get("title", "").replace("\n", " ").strip(), "url": entry.get("link", ""), "source": "arXiv", "published_at": parse_date(entry.get("published")), "summary": re.sub(r"\s+", " ", entry.get("summary", "")).strip(), "image_url": None, "image_alt": entry.get("title", "")})
         return [x for x in result if x["title"] and x["url"]]
     except Exception:
         return []
@@ -218,12 +172,7 @@ async def fetch_gdelt(client: httpx.AsyncClient) -> list[dict]:
         response.raise_for_status()
         result = []
         for article in response.json().get("articles", []):
-            result.append({
-                "title": html.unescape(article.get("title", "")).strip(), "url": article.get("url", ""),
-                "source": article.get("domain", "GDELT"), "published_at": parse_date(article.get("seendate")),
-                "summary": article.get("title", ""), "image_url": article.get("socialimage"),
-                "image_alt": article.get("title", ""),
-            })
+            result.append({"title": html.unescape(article.get("title", "")).strip(), "url": article.get("url", ""), "source": article.get("domain", "GDELT"), "published_at": parse_date(article.get("seendate")), "summary": article.get("title", ""), "image_url": article.get("socialimage"), "image_alt": article.get("title", "")})
         return [x for x in result if x["title"] and x["url"]]
     except Exception:
         return []
@@ -235,12 +184,7 @@ async def fetch_devto(client: httpx.AsyncClient) -> list[dict]:
         response.raise_for_status()
         result = []
         for article in response.json():
-            result.append({
-                "title": article.get("title", ""), "url": article.get("url", ""), "source": "DEV Community",
-                "published_at": parse_date(article.get("published_at")),
-                "summary": article.get("description", ""), "image_url": article.get("cover_image"),
-                "image_alt": article.get("title", ""),
-            })
+            result.append({"title": article.get("title", ""), "url": article.get("url", ""), "source": "DEV Community", "published_at": parse_date(article.get("published_at")), "summary": article.get("description", ""), "image_url": article.get("cover_image"), "image_alt": article.get("title", "")})
         return [x for x in result if x["title"] and x["url"]]
     except Exception:
         return []
