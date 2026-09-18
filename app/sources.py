@@ -9,6 +9,14 @@ import httpx
 from .config import PUBLIC_APIS, RSS_SOURCES
 
 USER_AGENT = "JARVIS-Tech-News/1.0"
+PODCAST_QUERIES = [
+    'technology podcast "Sam Altman"',
+    'technology podcast "Jensen Huang"',
+    'technology podcast "Mark Zuckerberg"',
+    'technology podcast "Satya Nadella"',
+    'technology podcast "Demis Hassabis"',
+    'AI podcast interview technology CEO',
+]
 
 
 def extract_image_url(entry) -> str | None:
@@ -34,9 +42,33 @@ def parse_date(value):
     if not value:
         return None
     try:
-        return datetime.fromisoformat(str(value).replace("Z", "+00:00"))
+        text = str(value)
+        if re.fullmatch(r"\d{8}T\d{6}Z", text):
+            return datetime.strptime(text, "%Y%m%dT%H%M%SZ").replace(tzinfo=timezone.utc)
+        return datetime.fromisoformat(text.replace("Z", "+00:00"))
     except ValueError:
         return None
+
+
+def podcast_highlights(summary: str, title: str) -> list[dict]:
+    text = re.sub(r"\s+", " ", html.unescape(summary or "")).strip()
+    sentences = [s.strip() for s in re.split(r"(?<=[.!?])\s+", text) if len(s.strip()) >= 45]
+    keywords = ("AI", "agent", "model", "future", "computer", "robot", "security", "open source", "GPU", "developer", "AGI", "technology")
+    ranked = sorted(
+        sentences,
+        key=lambda s: (sum(k.lower() in s.lower() for k in keywords), min(len(s), 180)),
+        reverse=True,
+    )
+    highlights = []
+    for sentence in ranked[:3]:
+        highlights.append({
+            "text": sentence[:220],
+            "reason": "JARVIS picked this as a high-signal technology point from the episode description.",
+            "timestamp": None,
+        })
+    if not highlights and text:
+        highlights.append({"text": text[:220], "reason": "Best available episode summary.", "timestamp": None})
+    return highlights
 
 
 async def fetch_feed(source_name: str, feed_url: str, client: httpx.AsyncClient) -> list[dict]:
@@ -61,6 +93,38 @@ async def fetch_feed(source_name: str, feed_url: str, client: httpx.AsyncClient)
         return items
     except Exception:
         return []
+
+
+async def fetch_podcasts(client: httpx.AsyncClient) -> list[dict]:
+    async def one(query: str):
+        try:
+            url = "https://news.google.com/rss/search"
+            response = await client.get(url, params={"q": query, "hl": "en-US", "gl": "US", "ceid": "US:en"})
+            response.raise_for_status()
+            parsed = feedparser.parse(response.text)
+            result = []
+            for entry in parsed.entries[:8]:
+                title = html.unescape(entry.get("title", "")).strip()
+                summary = entry.get("summary", "").strip()
+                link = entry.get("link", "")
+                if not title or not link:
+                    continue
+                result.append({
+                    "title": f"Podcast / Interview: {title}",
+                    "url": link,
+                    "source": "Podcast Discovery",
+                    "published_at": datetime(*entry.published_parsed[:6], tzinfo=timezone.utc) if getattr(entry, "published_parsed", None) else None,
+                    "summary": summary,
+                    "image_url": None,
+                    "image_alt": title,
+                    "content_type": "podcast",
+                    "highlights": podcast_highlights(summary, title),
+                })
+            return result
+        except Exception:
+            return []
+    batches = await asyncio.gather(*(one(query) for query in PODCAST_QUERIES))
+    return [item for batch in batches for item in batch]
 
 
 async def fetch_hacker_news(client: httpx.AsyncClient) -> list[dict]:
@@ -185,7 +249,7 @@ async def fetch_devto(client: httpx.AsyncClient) -> list[dict]:
 async def fetch_all() -> list[dict]:
     async with httpx.AsyncClient(timeout=15, follow_redirects=True, headers={"User-Agent": USER_AGENT}) as client:
         tasks = [fetch_feed(name, url, client) for name, url in RSS_SOURCES.items()]
-        tasks += [fetch_hacker_news(client), fetch_github(client), fetch_nvd(client), fetch_arxiv(client), fetch_gdelt(client), fetch_devto(client)]
+        tasks += [fetch_podcasts(client), fetch_hacker_news(client), fetch_github(client), fetch_nvd(client), fetch_arxiv(client), fetch_gdelt(client), fetch_devto(client)]
         batches = await asyncio.gather(*tasks, return_exceptions=True)
     results = []
     for batch in batches:
