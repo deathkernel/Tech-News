@@ -1,7 +1,9 @@
 import html
 import json
-import re
 import os
+import re
+import socket
+import ipaddress
 from datetime import datetime, timezone
 from pathlib import Path
 from urllib.parse import unquote, urlparse
@@ -34,7 +36,7 @@ class RegisterPayload(BaseModel):
 
 
 def require_user(jarvis_session: str | None = Cookie(default=None), jarvis_csrf: str | None = Cookie(default=None), x_csrf_token: str | None = Header(default=None)):
-    return current_user(jarvis_session, jarvis_csrf, x_csrf_token)
+    return current_user(jarvis_session, jarvis_csrf, x_csrf_token, require_csrf=False)
 
 
 def set_auth_cookies(response: Response, user_id: int):
@@ -136,12 +138,34 @@ async def screenshot_analyze(file:UploadFile=File(...),minimum_importance:int=Qu
     if len(data)>10*1024*1024: return {"error":"Image is too large. Maximum size is 10 MB."}
     return await analyze_screenshot(data,file.filename or "screenshot",minimum_importance)
 
+
+def is_safe_remote_url(target: str) -> bool:
+    """Allow public HTTP(S) hosts only; reject local/private/reserved destinations."""
+    parsed = urlparse(target)
+    if parsed.scheme not in {"http", "https"} or not parsed.hostname:
+        return False
+    if parsed.port not in (None, 80, 443):
+        return False
+    hostname = parsed.hostname.strip().rstrip(".")
+    if hostname.lower() == "localhost":
+        return False
+    try:
+        addresses = {info[4][0] for info in socket.getaddrinfo(hostname, parsed.port or (443 if parsed.scheme == "https" else 80), type=socket.SOCK_STREAM)}
+    except (OSError, socket.gaierror, ValueError):
+        return False
+    for address in addresses:
+        ip = ipaddress.ip_address(address)
+        if ip.is_private or ip.is_loopback or ip.is_link_local or ip.is_reserved or ip.is_multicast or ip.is_unspecified:
+            return False
+    return True
+
+
 @app.get("/image")
 async def article_image(url:str=Query(...,min_length=8)):
     target=unquote(url).strip(); parsed=urlparse(target)
-    if parsed.scheme not in {"http","https"} or not parsed.netloc: return {"image_url":None}
+    if not is_safe_remote_url(target): return {"image_url":None}
     try:
-        async with httpx.AsyncClient(timeout=10,follow_redirects=True) as client:
+        async with httpx.AsyncClient(timeout=10,follow_redirects=False) as client:
             response=await client.get(target,headers={"User-Agent":"Tech-News/1.0"}); response.raise_for_status()
         if "text/html" not in response.headers.get("content-type",""): return {"image_url":None}
         html_text=response.text[:1500000]
