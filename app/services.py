@@ -3,7 +3,7 @@ from datetime import datetime, timezone
 import re
 
 from .filters import classify, importance, normalize_title
-from .models import NewsItem
+from .models import NewsItem, PodcastHighlight
 from .sources import fetch_all
 
 
@@ -15,7 +15,7 @@ def make_tags(title: str, summary: str, category: str, companies: list[str]) -> 
     keywords = [
         "api", "sdk", "open source", "security", "cve", "vulnerability",
         "model", "agent", "gpu", "cloud", "linux", "github", "developer",
-        "framework", "database", "browser", "research",
+        "framework", "database", "browser", "research", "podcast", "interview",
     ]
     for keyword in keywords:
         if keyword in text and keyword.title() not in tags:
@@ -55,9 +55,12 @@ async def collect_news(min_importance: int = 4) -> list[NewsItem]:
 
         category, companies = classify(title, item.get("summary", ""))
         score = importance(title, item.get("summary", ""), category, companies)
+        if item.get("content_type") == "podcast":
+            score = min(10, score + 1)
         if score < min_importance:
             continue
 
+        highlights = [PodcastHighlight(**highlight) for highlight in item.get("highlights", []) if highlight.get("text")]
         result.append(NewsItem(
             title=title,
             url=url,
@@ -70,6 +73,8 @@ async def collect_news(min_importance: int = 4) -> list[NewsItem]:
             tags=make_tags(title, item.get("summary", ""), category, companies),
             image_url=item.get("image_url"),
             image_alt=item.get("image_alt", title),
+            content_type=item.get("content_type", "news"),
+            highlights=highlights,
         ))
 
     result.sort(
@@ -92,6 +97,7 @@ async def intelligence_snapshot(min_importance: int = 4) -> dict:
         "total": len(items),
         "major": sum(item.importance >= 8 for item in items),
         "important": sum(item.importance >= 6 for item in items),
+        "podcasts": sum(item.content_type == "podcast" for item in items),
         "categories": dict(category_counts.most_common()),
         "companies": dict(company_counts.most_common(12)),
         "sources": dict(source_counts.most_common()),
@@ -103,6 +109,7 @@ async def intelligence_snapshot(min_importance: int = 4) -> dict:
                 "source": item.source,
                 "tags": item.tags,
                 "opportunity": future_opportunity(item),
+                "content_type": item.content_type,
             }
             for item in items[:8]
         ],
@@ -122,6 +129,8 @@ async def daily_brief(min_importance: int = 4) -> dict:
                 "why_it_matters": item.summary[:260],
                 "opportunity": future_opportunity(item),
                 "tags": item.tags,
+                "content_type": item.content_type,
+                "highlights": [highlight.model_dump() for highlight in item.highlights],
             }
             for item in items[:10]
         ],
