@@ -39,6 +39,10 @@ def require_user(jarvis_session: str | None = Cookie(default=None), jarvis_csrf:
     return current_user(jarvis_session, jarvis_csrf, x_csrf_token, require_csrf=False)
 
 
+def require_user_with_csrf(jarvis_session: str | None = Cookie(default=None), jarvis_csrf: str | None = Cookie(default=None), x_csrf_token: str | None = Header(default=None)):
+    return current_user(jarvis_session, jarvis_csrf, x_csrf_token, require_csrf=True)
+
+
 def set_auth_cookies(response: Response, user_id: int):
     token = create_token(user_id)
     csrf = csrf_token()
@@ -74,7 +78,7 @@ async def login(payload: AuthPayload, response: Response):
     return {"user": public_user(user)}
 
 @app.post("/auth/logout")
-async def logout(response: Response, user=Depends(require_user)):
+async def logout(response: Response, user=Depends(require_user_with_csrf)):
     response.delete_cookie(AUTH_COOKIE, path="/")
     response.delete_cookie(CSRF_COOKIE, path="/")
     return {"ok": True}
