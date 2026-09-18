@@ -18,7 +18,7 @@ from .models import NewsItem
 from .screenshot import analyze_screenshot
 from .services import collect_news, daily_brief, daily_top10, intelligence_snapshot
 
-app = FastAPI(title="Tech-News API", version="1.6.0", description="Technology intelligence and future-useful news collection API.")
+app = FastAPI(title="Tech-News API", version="1.6.0", description="Technology news and future-useful information collection API.")
 STATIC_DIR = Path(__file__).parent / "static"
 COMPANY_DATA = STATIC_DIR.parent / "data" / "companies.json"
 app.mount("/static", StaticFiles(directory=STATIC_DIR), name="static")
