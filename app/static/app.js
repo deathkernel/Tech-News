@@ -149,6 +149,17 @@ const screenshotPanel = document.getElementById('screenshotPanel');
 const screenshotPreview = document.getElementById('screenshotPreview');
 const clearScreenshot = document.getElementById('clearScreenshot');
 
+const analyzeScreenshot = document.createElement('button');
+analyzeScreenshot.type = 'button';
+analyzeScreenshot.textContent = 'Analyze';
+analyzeScreenshot.style.display = 'none';
+screenshotPanel.appendChild(analyzeScreenshot);
+
+const screenshotResult = document.createElement('div');
+screenshotResult.className = 'screenshot-result';
+screenshotResult.style.gridColumn = '1 / -1';
+screenshotPanel.appendChild(screenshotResult);
+
 brief.addEventListener('click', async () => {
   brief.disabled = true;
   brief.innerHTML = '<span>✦</span> Building...';
@@ -179,17 +190,45 @@ screenshotInput.addEventListener('change', event => {
   const file = event.target.files?.[0];
   if (!file) return;
   if (!file.type.startsWith('image/')) return;
-  const reader = new FileReader();
-  reader.onload = () => {
-    screenshotPreview.src = reader.result;
-    screenshotPanel.hidden = false;
-    screenshotPanel.scrollIntoView({ behavior: 'smooth', block: 'center' });
-  };
-  reader.readAsDataURL(file);
+  screenshotPreview.src = URL.createObjectURL(file);
+  screenshotPanel.hidden = false;
+  analyzeScreenshot.style.display = 'inline-block';
+  screenshotResult.innerHTML = '<span>Screenshot ready. Press Analyze to send it through JARVIS.</span>';
+  screenshotPanel.scrollIntoView({ behavior: 'smooth', block: 'center' });
 });
+
+analyzeScreenshot.addEventListener('click', async () => {
+  const file = screenshotInput.files?.[0];
+  if (!file) return;
+  analyzeScreenshot.disabled = true;
+  analyzeScreenshot.textContent = 'Analyzing...';
+  screenshotResult.textContent = 'JARVIS is extracting text and checking the signal feed...';
+  try {
+    const body = new FormData();
+    body.append('file', file);
+    const response = await fetch(`/screenshot/analyze?minimum_importance=${importance.value}`, { method: 'POST', body });
+    const data = await response.json();
+    if (!response.ok || data.error) throw new Error(data.error || 'Analysis failed');
+    const matches = data.matches || [];
+    screenshotResult.innerHTML = `
+      <strong>${data.verified ? '✓ Signal verified' : '○ No matching signal yet'}</strong>
+      <p>Record: ${escapeHtml(data.record_id)} · OCR: ${escapeHtml(data.ocr?.status || 'unknown')}</p>
+      ${data.extracted_text ? `<pre>${escapeHtml(data.extracted_text.slice(0, 1800))}</pre>` : '<p>No readable text was extracted. Install Tesseract on the host to enable OCR.</p>'}
+      ${matches.length ? `<div>${matches.map(match => `<article class="brief-story"><strong>${escapeHtml(match.title)}</strong><span>${escapeHtml(match.category)} · ${match.importance}/10</span><p>Matched: ${escapeHtml(match.matched_terms.join(', '))}</p></article>`).join('')}</div>` : ''}
+    `;
+  } catch (error) {
+    screenshotResult.textContent = error.message || 'Screenshot analysis failed.';
+  } finally {
+    analyzeScreenshot.disabled = false;
+    analyzeScreenshot.textContent = 'Analyze';
+  }
+});
+
 clearScreenshot.addEventListener('click', () => {
   screenshotPreview.removeAttribute('src');
   screenshotInput.value = '';
+  screenshotResult.innerHTML = '';
+  analyzeScreenshot.style.display = 'none';
   screenshotPanel.hidden = true;
 });
 
