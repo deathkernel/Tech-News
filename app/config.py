@@ -43,3 +43,13 @@ PUBLIC_APIS = {
     "GDELT": "https://api.gdeltproject.org/api/v2/doc/doc",
     "DEV Community": "https://dev.to/api/articles",
 }
+
+# GitHub is intentionally curated. JARVIS should not turn every popular repository
+# into a news item; only repos from major technology organizations or high-signal
+# individual researchers/developers are eligible for the intelligence feed.
+CURATED_GITHUB_OWNERS = {
+    "openai", "google", "google-deepmind", "microsoft", "facebook", "meta-llama",
+    "nvidia", "anthropics", "huggingface", "github", "cloudflare", "vercel",
+    "docker", "kubernetes", "pytorch", "tensorflow", "apple", "torvalds",
+    "karpathy", "Andrej-Karpathy", "karpathy-ai",
+}
