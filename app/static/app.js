@@ -96,6 +96,7 @@ function renderPost(item, index) {
       <section class="story"><span class="label">WHAT HAPPENED</span><p>${escapeHtml(shortSummary)}</p></section>
       <section class="story why-story"><span class="label">WHY IT MATTERS</span><p>${escapeHtml(buildWhy(item))}</p></section>
       <div class="takeaway"><span class="label">KEY TAKEAWAY</span><strong>${escapeHtml(buildTakeaway(item))}</strong></div>
+      <div class="post-actions"><button class="post-action" type="button" data-copy-post>COPY POST</button><a class="post-action" href="${escapeHtml(item.url)}" target="_blank" rel="noopener noreferrer">OPEN SOURCE ↗</a></div>
       <footer class="post-footer"><div><span class="source">${escapeHtml(item.source)}</span>${companies ? `<span class="companies">${escapeHtml(companies)}</span>` : ''}</div><span class="handle">@JARVIS</span></footer>
     </article>`;
 }
