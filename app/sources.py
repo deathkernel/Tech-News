@@ -1,5 +1,5 @@
 import asyncio
-from datetime import datetime, timezone
+from datetime import datetime, timedelta, timezone
 import html
 import re
 
@@ -95,7 +95,9 @@ async def fetch_github(client: httpx.AsyncClient) -> list[dict]:
 
 async def fetch_nvd(client: httpx.AsyncClient) -> list[dict]:
     try:
-        response = await client.get(PUBLIC_APIS["NVD"], params={"pubStartDate": "2026-09-15T00:00:00.000", "resultsPerPage": 20}); response.raise_for_status(); result = []
+        now = datetime.now(timezone.utc)
+        start = now - timedelta(days=1)
+        response = await client.get(PUBLIC_APIS["NVD"], params={"pubStartDate": start.strftime("%Y-%m-%dT%H:%M:%S.000"), "pubEndDate": now.strftime("%Y-%m-%dT%H:%M:%S.000"), "resultsPerPage": 20}); response.raise_for_status(); result = []
         for vuln in response.json().get("vulnerabilities", []):
             cve = vuln.get("cve", {}); cve_id = cve.get("id"); descriptions = cve.get("descriptions", []); description = next((x.get("value") for x in descriptions if x.get("lang") == "en"), "")
             if cve_id: result.append({"title": f"Security advisory: {cve_id}", "url": f"https://nvd.nist.gov/vuln/detail/{cve_id}", "source": "NVD", "published_at": parse_date(cve.get("published")), "summary": description, "image_url": None, "image_alt": cve_id})
