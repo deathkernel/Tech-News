@@ -18,6 +18,29 @@
       <section id="feedSection" class="feed-section"><div class="feed-heading"><div><span class="section-kicker">03 / ALL TECHNOLOGY</span><h2>Latest news</h2></div><span id="status">SCANNING...</span></div><div class="feed-toolbar"><label class="search-wrap"><span>⌕</span><input id="search" aria-label="Search news" placeholder="Search technology, companies, signals..."></label><select id="category" aria-label="Filter by category"><option value="">All sectors</option></select><select id="importance" aria-label="Filter by importance"><option value="4">Important+</option><option value="6">High impact</option><option value="8">Major only</option></select></div><section id="feed" class="feed" aria-live="polite"></section></section>
     </main><footer class="editorial-footer"><strong>THE TECH EXPRESS</strong><span>AI · SPACE · CYBER · DEFENSE · MARINE · HARDWARE · ENERGY · RESEARCH</span><span>TECHNOLOGY NEWS</span></footer>
   </div>
-  <script src="/static/auth.js"></script><script src="/static/app.js"></script><script src="/static/post-actions.js"></script><script src="/static/intelligence-enhancements.js"></script>
+  <script src="/static/auth.js"></script>
+  <style id="auth-ui-final">
+    /* Auth layout: deliberately mirrors the compact, editorial UI of the main app. */
+    #techNewsAuth .tech-news-auth{padding:24px;background:radial-gradient(circle at 72% 0%,rgba(101,126,255,.16),transparent 31rem),radial-gradient(circle at 8% 22%,rgba(202,255,53,.055),transparent 25rem),linear-gradient(180deg,#07090c 0%,#050608 55%,#080a0d 100%) !important}
+    #techNewsAuth .tech-news-auth-box{width:min(520px,100%) !important;display:block !important;min-height:0 !important;border:1px solid rgba(255,255,255,.11) !important;border-radius:18px !important;background:#0a0d12 !important;box-shadow:0 32px 90px rgba(0,0,0,.52),inset 0 1px 0 rgba(255,255,255,.04) !important}
+    #techNewsAuth .tech-news-auth-brand-panel{padding:25px 28px 22px !important;display:block !important;border:0 !important;border-bottom:1px solid rgba(255,255,255,.09) !important;background:linear-gradient(145deg,rgba(255,255,255,.045),rgba(255,255,255,.012)) !important}
+    #techNewsAuth .tech-news-auth-mark{font-size:9px !important}
+    #techNewsAuth .tech-news-auth-mark i{width:28px !important;height:28px !important}
+    #techNewsAuth .tech-news-auth-brand-panel h2{margin:24px 0 0 !important;font-size:clamp(42px,8vw,58px) !important;line-height:.86 !important}
+    #techNewsAuth .tech-news-auth-brand-panel .brand-sub{margin:12px 0 0 !important}
+    #techNewsAuth .tech-news-auth-form-panel{padding:28px !important;background:transparent !important}
+    #techNewsAuth .tech-news-auth-form{max-width:none !important}
+    #techNewsAuth .tech-news-auth-eyebrow{margin-bottom:12px !important}
+    #techNewsAuth .tech-news-auth-form h1{font-size:27px !important;margin-bottom:7px !important}
+    #techNewsAuth .tech-news-auth-form .sub{margin-bottom:20px !important;font-size:10px !important}
+    #techNewsAuth .tech-news-auth-field{margin-top:13px !important}
+    #techNewsAuth .tech-news-auth-field label{margin-bottom:6px !important}
+    #techNewsAuth .tech-news-auth-box input{height:44px !important;border-radius:10px !important;background:rgba(0,0,0,.24) !important}
+    #techNewsAuth .tech-news-auth-submit{height:44px !important;margin-top:18px !important;border-radius:10px !important}
+    #techNewsAuth .tech-news-auth-switch{margin-top:17px !important}
+    #techNewsAuth .tech-news-auth-box:after{content:"AI · SPACE · CYBER · DEFENSE · HARDWARE · ENERGY";display:block;padding:0 28px 22px;color:#4f5660;font-size:6px;font-weight:850;letter-spacing:.14em;text-align:center}
+    @media(max-width:560px){#techNewsAuth .tech-news-auth{padding:14px !important}#techNewsAuth .tech-news-auth-brand-panel{padding:22px 22px 19px !important}#techNewsAuth .tech-news-auth-form-panel{padding:23px 22px 25px !important}#techNewsAuth .tech-news-auth-box:after{padding:0 22px 19px}}
+  </style>
+  <script src="/static/app.js"></script><script src="/static/post-actions.js"></script><script src="/static/intelligence-enhancements.js"></script>
   <script>document.querySelectorAll('[data-nav-category]').forEach(link=>link.addEventListener('click',()=>{const select=document.getElementById('category');if(select){select.value=link.dataset.navCategory;select.dispatchEvent(new Event('change'));}}));</script>
 </body></html>
