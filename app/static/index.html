@@ -20,28 +20,39 @@
   </div>
   <script src="/static/auth.js"></script>
   <style id="auth-ui-final">
-    /* Keep the existing Tech Express dark theme; only simplify the auth card geometry. */
-    #techNewsAuth .tech-news-auth-box{width:min(430px,100%) !important;min-height:0 !important;display:block !important;border-radius:16px !important;background:rgba(10,13,18,.97) !important;box-shadow:0 28px 75px rgba(0,0,0,.5),inset 0 1px 0 rgba(255,255,255,.035) !important}
+    /* Clean, light, minimal auth surface; the main site's dark theme remains untouched. */
+    #techNewsAuth .tech-news-auth{background:#fff !important;color:#202124 !important;font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif !important;padding:24px !important}
+    #techNewsAuth .tech-news-auth:before,#techNewsAuth .tech-news-auth:after{display:none !important}
+    #techNewsAuth .tech-news-auth-box{width:min(450px,100%) !important;min-height:0 !important;display:block !important;overflow:hidden !important;border:1px solid #dadce0 !important;border-radius:16px !important;background:#fff !important;box-shadow:0 2px 8px rgba(60,64,67,.12),0 1px 3px rgba(60,64,67,.08) !important}
     #techNewsAuth .tech-news-auth-box:before{display:none !important}
-    #techNewsAuth .tech-news-auth-brand-panel{padding:30px 34px 24px !important;display:block !important;border:0 !important;border-bottom:1px solid rgba(255,255,255,.08) !important;background:transparent !important}
+    #techNewsAuth .tech-news-auth-brand-panel{padding:32px 40px 24px !important;display:block !important;border:0 !important;border-bottom:1px solid #f1f3f4 !important;background:#fff !important}
     #techNewsAuth .tech-news-auth-brand-panel:before{display:none !important}
-    #techNewsAuth .tech-news-auth-mark{font-size:9px !important}
-    #techNewsAuth .tech-news-auth-mark i{width:30px !important;height:30px !important}
-    #techNewsAuth .tech-news-auth-brand-panel h2{margin:24px 0 0 !important;font-size:42px !important;line-height:.9 !important;letter-spacing:-.07em !important}
-    #techNewsAuth .tech-news-auth-brand-panel .brand-sub{margin:12px 0 0 !important}
+    #techNewsAuth .tech-news-auth-mark{color:#202124 !important;font-size:10px !important;letter-spacing:.12em !important}
+    #techNewsAuth .tech-news-auth-mark i{width:28px !important;height:28px !important;border:1px solid #dadce0 !important;border-radius:50% !important;box-shadow:none !important;background:#f8f9fa !important}
+    #techNewsAuth .tech-news-auth-mark i:before,#techNewsAuth .tech-news-auth-mark i:after{display:none !important}
+    #techNewsAuth .tech-news-auth-brand-panel h2{max-width:none !important;margin:22px 0 0 !important;color:#202124 !important;font-family:Inter,ui-sans-serif,system-ui,sans-serif !important;font-size:34px !important;font-weight:600 !important;line-height:1.15 !important;letter-spacing:-.035em !important}
+    #techNewsAuth .tech-news-auth-brand-panel h2 em{color:#202124 !important;font-family:inherit !important;font-weight:600 !important;font-style:normal !important;letter-spacing:inherit !important}
+    #techNewsAuth .tech-news-auth-brand-panel .brand-sub{margin:9px 0 0 !important;color:#5f6368 !important;font-size:8px !important;font-weight:700 !important;letter-spacing:.15em !important}
     #techNewsAuth .tech-news-auth-status{display:none !important}
-    #techNewsAuth .tech-news-auth-form-panel{padding:30px 34px 32px !important;background:transparent !important}
-    #techNewsAuth .tech-news-auth-form{max-width:none !important}
-    #techNewsAuth .tech-news-auth-eyebrow{margin-bottom:12px !important}
-    #techNewsAuth .tech-news-auth-form h1{font-size:28px !important;line-height:1.1 !important;margin-bottom:7px !important}
-    #techNewsAuth .tech-news-auth-form .sub{margin-bottom:20px !important;font-size:10px !important;line-height:1.6 !important}
-    #techNewsAuth .tech-news-auth-field{margin-top:14px !important}
-    #techNewsAuth .tech-news-auth-field label{margin-bottom:7px !important}
-    #techNewsAuth .tech-news-auth-box input{height:46px !important;border-radius:9px !important}
-    #techNewsAuth .tech-news-auth-submit{height:46px !important;margin-top:20px !important;border-radius:9px !important}
-    #techNewsAuth .tech-news-auth-switch{margin-top:18px !important}
+    #techNewsAuth .tech-news-auth-form-panel{padding:30px 40px 34px !important;background:#fff !important}
+    #techNewsAuth .tech-news-auth-form{max-width:none !important;margin:auto !important}
+    #techNewsAuth .tech-news-auth-eyebrow{margin-bottom:10px !important;color:#5f6368 !important;font-size:8px !important;letter-spacing:.14em !important}
+    #techNewsAuth .tech-news-auth-eyebrow:after{display:none !important}
+    #techNewsAuth .tech-news-auth-form h1{margin:0 0 7px !important;color:#202124 !important;font-size:24px !important;font-weight:500 !important;line-height:1.25 !important;letter-spacing:-.02em !important}
+    #techNewsAuth .tech-news-auth-form .sub{margin:0 0 22px !important;color:#5f6368 !important;font-size:11px !important;line-height:1.6 !important}
+    #techNewsAuth .tech-news-auth-field{margin-top:15px !important}
+    #techNewsAuth .tech-news-auth-field label{margin:0 0 7px !important;color:#3c4043 !important;font-size:9px !important;font-weight:600 !important;letter-spacing:.05em !important;text-transform:none !important}
+    #techNewsAuth .tech-news-auth-box input{height:46px !important;box-sizing:border-box !important;border:1px solid #dadce0 !important;border-radius:8px !important;background:#fff !important;color:#202124 !important;font-size:12px !important;box-shadow:none !important}
+    #techNewsAuth .tech-news-auth-box input::placeholder{color:#9aa0a6 !important}
+    #techNewsAuth .tech-news-auth-box input:focus{border-color:#1a73e8 !important;box-shadow:0 0 0 1px #1a73e8 !important;background:#fff !important}
+    #techNewsAuth .tech-news-auth-submit{height:46px !important;margin-top:21px !important;border:0 !important;border-radius:8px !important;background:#1a73e8 !important;color:#fff !important;font-size:10px !important;font-weight:700 !important;letter-spacing:.08em !important;box-shadow:none !important;transition:background .15s ease !important}
+    #techNewsAuth .tech-news-auth-submit:hover{background:#1769d1 !important;transform:none !important;box-shadow:none !important}
+    #techNewsAuth .tech-news-auth-submit:active{transform:none !important}
+    #techNewsAuth .tech-news-auth-error{color:#d93025 !important;font-size:10px !important}
+    #techNewsAuth .tech-news-auth-switch{margin-top:18px !important;color:#5f6368 !important;font-size:10px !important}
+    #techNewsAuth .tech-news-auth-switch button{color:#1a73e8 !important;text-decoration:none !important;font-weight:600 !important}
     #techNewsAuth .tech-news-auth-box:after{display:none !important}
-    @media(max-width:560px){#techNewsAuth .tech-news-auth{padding:16px !important}#techNewsAuth .tech-news-auth-brand-panel{padding:26px 24px 22px !important}#techNewsAuth .tech-news-auth-form-panel{padding:26px 24px 28px !important}}
+    @media(max-width:560px){#techNewsAuth .tech-news-auth{padding:16px !important}#techNewsAuth .tech-news-auth-box{border-radius:14px !important}#techNewsAuth .tech-news-auth-brand-panel{padding:27px 25px 22px !important}#techNewsAuth .tech-news-auth-form-panel{padding:26px 25px 30px !important}}
   </style>
   <script src="/static/app.js"></script><script src="/static/post-actions.js"></script><script src="/static/intelligence-enhancements.js"></script>
   <script>document.querySelectorAll('[data-nav-category]').forEach(link=>link.addEventListener('click',()=>{const select=document.getElementById('category');if(select){select.value=link.dataset.navCategory;select.dispatchEvent(new Event('change'));}}));</script>
