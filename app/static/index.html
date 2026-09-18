@@ -18,6 +18,6 @@
       <section id="feedSection" class="feed-section"><div class="feed-heading"><div><span class="section-kicker">03 / ALL TECHNOLOGY</span><h2>Latest intelligence</h2></div><span id="status">SCANNING...</span></div><div class="feed-toolbar"><label class="search-wrap"><span>⌕</span><input id="search" aria-label="Search news" placeholder="Search technology, companies, signals..."></label><select id="category" aria-label="Filter by category"><option value="">All sectors</option></select><select id="importance" aria-label="Filter by importance"><option value="4">Important+</option><option value="6">High impact</option><option value="8">Major only</option></select></div><section id="feed" class="feed" aria-live="polite"></section></section>
     </main><footer class="editorial-footer"><strong>JARVIS CORE</strong><span>AI · SPACE · CYBER · DEFENSE · MARINE · HARDWARE · ENERGY · RESEARCH</span><span>TECHNOLOGY INTELLIGENCE</span></footer>
   </div>
-  <script src="/static/app.js"></script><script src="/static/post-actions.js"></script><script src="/static/intelligence-enhancements.js"></script>
+  <script src="/static/auth.js"></script><script src="/static/app.js"></script><script src="/static/post-actions.js"></script><script src="/static/intelligence-enhancements.js"></script>
   <script>document.querySelectorAll('[data-nav-category]').forEach(link=>link.addEventListener('click',()=>{const select=document.getElementById('category');if(select){select.value=link.dataset.navCategory;select.dispatchEvent(new Event('change'));}}));</script>
 </body></html>
