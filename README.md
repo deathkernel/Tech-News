@@ -1,6 +1,6 @@
-# JARVIS Tech-News
+# The Tech Express
 
-JARVIS is a technology intelligence feed that collects technology news, removes duplicates/noise, categorizes stories, and surfaces updates likely to remain useful in the future.
+The Tech Express is a technology news feed that collects technology news, removes duplicates/noise, categorizes stories, and surfaces updates likely to remain useful in the future.
 
 ## Scope
 
@@ -34,19 +34,19 @@ Open `http://127.0.0.1:8000/docs` for the API.
 
 ## API
 
-- `GET /` JARVIS dashboard
+- `GET /` The Tech Express dashboard
 - `GET /health` health check
 - `GET /news` collected and filtered news
 - `POST /news/refresh` fetch fresh stories
 - `GET /intelligence` intelligence snapshot
-- `GET /brief` daily intelligence brief
+- `GET /brief` daily news brief
 - `POST /screenshot/analyze` OCR a screenshot and verify it against the current signal feed
 - `GET /categories` supported categories
 - `GET /sources` configured sources
 
 ## Screenshot intelligence
 
-The dashboard accepts a technology screenshot directly from the browser. JARVIS sends the image to the screenshot analyzer, extracts readable text with local OCR when Tesseract is available, checks the extracted signal against current JARVIS stories, and returns a structured Intelligence Record with a verification state and matched stories.
+The dashboard accepts a technology screenshot directly from the browser. The Tech Express sends the image to the screenshot analyzer, extracts readable text with local OCR when Tesseract is available, checks the extracted signal against current stories, and returns a structured Intelligence Record with a verification state and matched stories.
 
 The upload is processed in memory and is not written to the repository or a persistent file store.
 
