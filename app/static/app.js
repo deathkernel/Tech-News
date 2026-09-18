@@ -1,7 +1,27 @@
 const feed=document.getElementById('feed'),status=document.getElementById('status'),search=document.getElementById('search'),category=document.getElementById('category'),importance=document.getElementById('importance'),refresh=document.getElementById('refresh'),top10List=document.getElementById('top10List'),top10Date=document.getElementById('top10Date'),storyView=document.getElementById('storyView'),feedSection=document.getElementById('feedSection');let items=[];let topStories=[];
 const categoryIcons={AI:'🤖',LLMs:'🧠',Programming:'💻','Cyber Security':'🔐',Cloud:'☁️',Linux:'🐧',Windows:'🪟',Apple:'🍎',Android:'📱',Web:'🌐',Databases:'🗄️',DevOps:'⚙️','Open Source':'📦',Research:'🧪',Hardware:'🖥️','Developer Tools':'🛠️',Space:'🚀',Marine:'🌊','Defense Technology':'🛡️',Aviation:'✈️',Automotive:'🚗',Energy:'⚛️',Quantum:'🔬',Biotech:'🧬'};
 async function loadCategories(){try{const r=await fetch('/categories');if(!r.ok)throw 0;const d=await r.json();category.innerHTML='<option value="">All topics</option>';for(const name of d.categories){const o=document.createElement('option');o.value=name;o.textContent=name;category.appendChild(o)}}catch{category.innerHTML='<option value="">All topics</option>'}}
-async function loadNews(){setLoading(true);status.textContent='Finding high-signal technology stories...';try{const [newsResponse,topResponse]=await Promise.all([fetch(`/news?minimum_importance=${importance.value}`),fetch(`/top10?minimum_importance=${importance.value}`)]);if(!newsResponse.ok||!topResponse.ok)throw 0;items=await newsResponse.json();const topData=await topResponse.json();topStories=topData.stories||[];render();renderTop10(topData);updateIntelligence()}catch{status.textContent='Could not load news';feed.innerHTML='<div class="empty">JARVIS could not reach the news sources right now. Try refresh.</div>';top10List.innerHTML='<div class="empty">Daily Top 10 is temporarily unavailable.</div>'}finally{setLoading(false)}}
+async function loadNews(){
+  setLoading(true);
+  status.textContent='Fetching live technology news...';
+  try{
+    const [newsResponse,topResponse]=await Promise.all([
+      fetch('/news?minimum_importance=0',{cache:'no-store'}),
+      fetch('/top10?minimum_importance=0',{cache:'no-store'})
+    ]);
+    if(!newsResponse.ok||!topResponse.ok) throw new Error('feed request failed');
+    items=await newsResponse.json();
+    const topData=await topResponse.json();
+    topStories=topData.stories||[];
+    render();
+    renderTop10(topData);
+    updateIntelligence();
+  }catch{
+    status.textContent='Could not load news';
+    feed.innerHTML='<div class="empty">Could not reach the live news sources. Try Refresh.</div>';
+    top10List.innerHTML='<div class="empty">Daily Top 10 is temporarily unavailable.</div>';
+  }finally{setLoading(false)}
+}
 function updateIntelligence(){document.getElementById('intelTotal').textContent=items.length;document.getElementById('intelMajor').textContent=items.filter(x=>x.importance>=8).length;document.getElementById('intelImportant').textContent=items.filter(x=>x.importance>=6).length;document.getElementById('intelTop').textContent=items[0]?.category||'NO SIGNAL'}
 function renderTop10(data){const top=data?.stories||[];top10Date.textContent=`${data?.date?formatDate(data.date):new Date().toLocaleDateString([],{month:'short',day:'numeric',year:'numeric'})} · ${top.length} signals`;top10List.innerHTML=top.length?top.map((item,i)=>`<article class="top10-item" data-top-url="${escapeHtml(item.url)}"><div class="top10-rank">${String(i+1).padStart(2,'0')}</div><div><strong>${escapeHtml(item.title)}</strong><span class="top10-meta">${categoryIcons[item.category]||'⚡'} ${escapeHtml(item.category)} · ${escapeHtml(item.source)} · ${item.importance}/10</span><p>${escapeHtml(cleanText(item.summary).slice(0,180)||'Technology signal worth tracking.')}</p><a href="#story" data-top-url="${escapeHtml(item.url)}">READ STORY →</a></div></article>`).join(''):'<div class="empty">No high-signal stories found today.</div>'}
 function render(){const query=search.value.toLowerCase().trim(),selected=category.value.toLowerCase(),filtered=items.filter(item=>{const s=[item.title,item.summary,item.source,item.content_type,...(item.companies||[]),...(item.tags||[])].join(' ').toLowerCase();return(!query||s.includes(query))&&(!selected||item.category.toLowerCase()===selected)});status.textContent=`${filtered.length} ${filtered.length===1?'story':'stories'}`;feed.innerHTML=filtered.length?filtered.map(item=>renderPost(item,items.indexOf(item))).join(''):'<div class="empty">No stories match these filters.</div>'}
