@@ -1,8 +1,8 @@
 CATEGORIES = {
-    "AI": ["artificial intelligence", " ai ", "machine learning", "agentic"],
-    "LLMs": ["llm", "large language model", "foundation model", "language model"],
+    "AI": ["artificial intelligence", " ai ", "machine learning", "agentic", "generative ai"],
+    "LLMs": ["llm", "large language model", "foundation model", "language model", "transformer"],
     "Programming": ["python", "javascript", "typescript", "programming language", "compiler", "framework"],
-    "Cyber Security": ["cybersecurity", "cyber security", "cve", "vulnerability", "malware", "ransomware", "security advisory"],
+    "Cyber Security": ["cybersecurity", "cyber security", "cve", "vulnerability", "malware", "ransomware", "security advisory", "exploit"],
     "Cloud": ["aws", "azure", "google cloud", "cloud computing", "serverless"],
     "Linux": ["linux", "kernel", "ubuntu", "debian", "red hat"],
     "Windows": ["windows", "powershell", "wsl"],
@@ -32,4 +32,14 @@ RSS_SOURCES = {
     "Hugging Face": "https://huggingface.co/blog/feed.xml",
     "The Hacker News": "https://feeds.feedburner.com/TheHackersNews",
     "Ars Technica": "https://feeds.arstechnica.com/arstechnica/index",
+}
+
+# Public APIs used for discovery and verification. These do not require a paid plan.
+PUBLIC_APIS = {
+    "Hacker News": "https://hacker-news.firebaseio.com/v0/",
+    "GitHub": "https://api.github.com/",
+    "NVD": "https://services.nvd.nist.gov/rest/json/cves/2.0",
+    "arXiv": "https://export.arxiv.org/api/query",
+    "GDELT": "https://api.gdeltproject.org/api/v2/doc/doc",
+    "DEV Community": "https://dev.to/api/articles",
 }
