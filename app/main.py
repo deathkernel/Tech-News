@@ -4,17 +4,18 @@ from pathlib import Path
 from urllib.parse import unquote, urlparse
 
 import httpx
-from fastapi import FastAPI, Query
+from fastapi import FastAPI, File, Query, UploadFile
 from fastapi.responses import FileResponse, RedirectResponse
 from fastapi.staticfiles import StaticFiles
 
 from .config import CATEGORIES, RSS_SOURCES
 from .models import NewsItem
+from .screenshot import analyze_screenshot
 from .services import collect_news, daily_brief, intelligence_snapshot
 
 app = FastAPI(
     title="JARVIS Command Center API",
-    version="1.2.0",
+    version="1.3.0",
     description="Technology intelligence and future-useful news collection API.",
 )
 
@@ -50,6 +51,24 @@ async def intelligence(minimum_importance: int = Query(default=4, ge=0, le=10)):
 @app.get("/brief")
 async def brief(minimum_importance: int = Query(default=4, ge=0, le=10)):
     return await daily_brief(minimum_importance)
+
+
+@app.post("/screenshot/analyze")
+async def screenshot_analyze(
+    file: UploadFile = File(...),
+    minimum_importance: int = Query(default=4, ge=0, le=10),
+):
+    """OCR a technology screenshot and verify it against the current JARVIS signal feed."""
+    if not file.content_type or not file.content_type.startswith("image/"):
+        return {"error": "Only image uploads are supported."}
+
+    data = await file.read()
+    if not data:
+        return {"error": "The uploaded image is empty."}
+    if len(data) > 10 * 1024 * 1024:
+        return {"error": "Image is too large. Maximum size is 10 MB."}
+
+    return await analyze_screenshot(data, file.filename or "screenshot", minimum_importance)
 
 
 @app.get("/image")
