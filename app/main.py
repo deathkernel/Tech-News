@@ -13,9 +13,9 @@ from fastapi.staticfiles import StaticFiles
 from .config import CATEGORIES, RSS_SOURCES
 from .models import NewsItem
 from .screenshot import analyze_screenshot
-from .services import collect_news, daily_brief, intelligence_snapshot
+from .services import collect_news, daily_brief, daily_top10, intelligence_snapshot
 
-app = FastAPI(title="JARVIS Command Center API", version="1.4.0", description="Technology intelligence and future-useful news collection API.")
+app = FastAPI(title="JARVIS Command Center API", version="1.5.0", description="Technology intelligence and future-useful news collection API.")
 STATIC_DIR = Path(__file__).parent / "static"
 COMPANY_DATA = STATIC_DIR.parent / "data" / "companies.json"
 app.mount("/static", StaticFiles(directory=STATIC_DIR), name="static")
@@ -37,8 +37,26 @@ async def companies():
     try: return {"companies":json.loads(COMPANY_DATA.read_text(encoding="utf-8"))}
     except Exception: return {"companies":[]}
 
+@app.get("/company")
+async def company(name:str=Query(...,min_length=1)):
+    try:
+        dataset=json.loads(COMPANY_DATA.read_text(encoding="utf-8"))
+    except Exception:
+        dataset=[]
+    match=next((item for item in dataset if item.get("name","").lower()==name.strip().lower() or name.strip().lower() in [a.lower() for a in item.get("aliases",[])]),None)
+    if not match: return {"company":None,"stories":[]}
+    items=await collect_news(4)
+    stories=[item for item in items if any(match["name"].lower()==c.lower() or any(alias.lower()==c.lower() for alias in match.get("aliases",[])) for c in item.companies)]
+    if not stories:
+        needle=[match["name"].lower(),*[a.lower() for a in match.get("aliases",[])]]
+        stories=[item for item in items if any(term in f"{item.title} {item.summary}".lower() for term in needle)]
+    return {"company":match,"stories":stories[:12],"generated_at":datetime.now(timezone.utc)}
+
 @app.get("/intelligence")
 async def intelligence(minimum_importance:int=Query(default=4,ge=0,le=10)): return await intelligence_snapshot(minimum_importance)
+
+@app.get("/top10")
+async def top10(minimum_importance:int=Query(default=4,ge=0,le=10)): return await daily_top10(minimum_importance)
 
 @app.get("/morning")
 async def morning(minimum_importance:int=Query(default=4,ge=0,le=10)):
