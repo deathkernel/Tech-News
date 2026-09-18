@@ -1,0 +1,39 @@
+/* JARVIS — True Editorial Front Page
+   Feed-only presentation. No cards, no dashboard grid. */
+.feed{display:grid;grid-template-columns:repeat(12,minmax(0,1fr));gap:0;border-top:1px solid var(--ink);border-bottom:1px solid var(--ink);background:var(--paper)}
+.post{position:relative;grid-column:span 4;display:flex;flex-direction:column;min-width:0;padding:20px 18px 18px;background:transparent;border:0;border-right:1px solid var(--line);border-bottom:1px solid var(--line);border-radius:0;box-shadow:none;overflow:hidden;color:var(--ink);transition:background .18s ease}
+.post:hover{transform:none;background:#efede6;border-color:var(--line);box-shadow:none}
+.post-glow{display:none}
+.post-header{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:10px}
+.post-brand{display:flex;align-items:center;gap:7px}
+.post-mark{width:23px;height:23px;border-radius:0;background:var(--ink);color:#fff;display:grid;place-items:center;font-size:7px;font-weight:950}
+.post-brand strong{font-size:7px;letter-spacing:.13em}
+.post-brand span:not(.post-mark){display:block;font-size:5px;color:#9b968e;letter-spacing:.08em;margin-top:2px}
+.post-date{font-size:6px;color:#99958e;white-space:nowrap}
+.post-topic{display:flex;align-items:center;gap:7px;margin:0 0 10px;color:#77736d;font-size:6.5px;font-weight:950;letter-spacing:.11em;text-transform:uppercase}
+.topic-icon{font-size:10px}.post-topic i{width:3px;height:3px;border-radius:50%;background:#aaa59d}
+.media-frame{width:100%;height:170px;margin:0 0 14px;border-radius:0;overflow:hidden;background:#e9e7e0}
+.post-image{width:100%;height:100%;display:block;object-fit:cover}
+.post h2{margin:0;font-family:var(--serif);font-size:23px;line-height:1.02;font-weight:600;letter-spacing:-.035em}
+.story{margin:10px 0 0}.story .label{font-size:5.5px;color:#99958d;font-weight:950;letter-spacing:.13em}.story p{font-size:8.7px;line-height:1.5;color:#68645e;margin:4px 0}
+.why-story{display:none}.takeaway{margin-top:10px;padding:9px 0 0;border-top:1px solid var(--line)}.takeaway .label{font-size:5.5px;color:#8d8982;font-weight:950;letter-spacing:.13em}.takeaway strong{display:block;margin-top:4px;font-family:var(--serif);font-size:9px;line-height:1.35}
+.post-actions{display:flex;gap:5px;margin-top:11px}.post-action{border:1px solid var(--line);border-radius:999px;padding:6px 8px;background:white;color:#4a4742;font-size:6px;font-weight:950;letter-spacing:.07em;cursor:pointer;text-decoration:none}.post-action:hover{background:var(--ink);color:white;border-color:var(--ink)}
+.post-footer{margin-top:11px;padding-top:8px;border-top:1px solid var(--line);font-size:6px;color:#88847c}.companies{display:block;color:#aaa59d;margin-top:3px}.handle{color:#aaa59d}
+
+/* Front-page composition: one dominant lead, two supporting stories, then briefs. */
+.post:first-child{grid-column:span 7;display:grid;grid-template-columns:minmax(0,1.15fr) minmax(240px,.85fr);grid-template-rows:auto auto 1fr auto auto auto;column-gap:24px;min-height:520px;padding:20px}
+.post:first-child .post-header{grid-column:1/-1;grid-row:1}.post:first-child .post-topic{grid-column:1/-1;grid-row:2}
+.post:first-child .media-frame{grid-column:1;grid-row:3/7;height:100%;min-height:330px;margin:0}
+.post:first-child h2{grid-column:2;grid-row:3;font-size:40px;line-height:.94;align-self:start}
+.post:first-child .story{grid-column:2;grid-row:4;margin-top:16px}.post:first-child .takeaway{grid-column:2;grid-row:5;margin-top:13px}.post:first-child .post-actions{grid-column:2;grid-row:6;align-self:end}.post:first-child .post-footer{grid-column:1/-1;grid-row:7;margin-top:13px}
+
+.post:nth-child(2),.post:nth-child(3){grid-column:span 5;min-height:255px;padding:20px 18px}
+.post:nth-child(2) .media-frame,.post:nth-child(3) .media-frame{height:150px}.post:nth-child(2) h2,.post:nth-child(3) h2{font-size:27px;line-height:1}
+.post:nth-child(3){border-right:0}
+
+.post:nth-child(n+4){grid-column:span 3;min-height:225px;padding:16px 15px}
+.post:nth-child(n+4) .post-header{margin-bottom:8px}.post:nth-child(n+4) .post-topic{margin-bottom:8px}.post:nth-child(n+4) .media-frame{height:92px;margin-bottom:10px}.post:nth-child(n+4) h2{font-size:18px;line-height:1.04}.post:nth-child(n+4) .story{display:none}.post:nth-child(n+4) .takeaway{margin-top:8px;padding-top:7px}.post:nth-child(n+4) .takeaway strong{font-size:8.5px}
+
+@media(max-width:1050px){.post:first-child{grid-column:span 6;min-height:500px}.post:first-child h2{font-size:32px}.post:nth-child(2),.post:nth-child(3){grid-column:span 3}.post:nth-child(n+4){grid-column:span 3}.media-frame{height:145px}}
+@media(max-width:760px){.feed{display:block}.post,.post:first-child,.post:nth-child(2),.post:nth-child(3),.post:nth-child(n+4){display:flex;grid-column:auto;min-height:0;padding:16px 0;border-right:0}.post:first-child{display:flex}.post:first-child .media-frame{height:250px;min-height:0;order:3}.post:first-child h2{font-size:31px;order:4}.post:first-child .story{order:5}.post:first-child .takeaway{order:6}.post:nth-child(2) .media-frame,.post:nth-child(3) .media-frame{height:190px}.post:nth-child(n+4) .media-frame{height:170px}.post:nth-child(n+4) .story{display:block}.post:nth-child(n+4) h2{font-size:22px}.post-actions{margin-top:11px}}
+@media(max-width:430px){.post:first-child .media-frame{height:205px}.post:first-child h2{font-size:28px}.post:nth-child(2) .media-frame,.post:nth-child(3) .media-frame{height:165px}.post:nth-child(n+4) .media-frame{height:150px}}
