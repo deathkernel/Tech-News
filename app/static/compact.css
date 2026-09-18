@@ -1,0 +1,12 @@
+/* Compact signal-feed pass: keeps JARVIS cards post-ready without oversized feed blocks. */
+.feed{display:grid;grid-template-columns:repeat(2,minmax(0,420px));justify-content:center;align-items:start;gap:28px;padding-top:34px}
+.post{width:100%;aspect-ratio:4/5;border-radius:20px}
+.media-frame{height:160px}
+.post h2{font-size:19px}
+.story p{font-size:7.5px}
+.takeaway{margin-top:8px}
+.post-actions{display:flex;gap:6px;margin:8px 20px 0}
+.post-action{border:1px solid rgba(0,0,0,.12);border-radius:999px;padding:6px 9px;background:rgba(0,0,0,.035);color:#30332f;font-size:6px;font-weight:900;letter-spacing:.08em;cursor:pointer}
+.post-action:hover{background:#090b0e;color:#caff35;border-color:#090b0e}
+@media(max-width:900px){.feed{grid-template-columns:minmax(0,420px)}}
+@media(max-width:520px){.feed{display:flex;gap:34px;padding-top:26px}.post{width:100%;}.media-frame{height:145px}.post h2{font-size:18px}.post-header{padding-left:16px;padding-right:16px}.post-topic,.story,.post h2,.post-actions{margin-left:16px;margin-right:16px}.takeaway{margin-left:16px;margin-right:16px}.post-footer{margin-left:16px;margin-right:16px}}
