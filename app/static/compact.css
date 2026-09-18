@@ -8,5 +8,8 @@
 .post-actions{display:flex;gap:6px;margin:8px 20px 0}
 .post-action{border:1px solid rgba(0,0,0,.12);border-radius:999px;padding:6px 9px;background:rgba(0,0,0,.035);color:#30332f;font-size:6px;font-weight:900;letter-spacing:.08em;cursor:pointer}
 .post-action:hover{background:#090b0e;color:#caff35;border-color:#090b0e}
+.podcast-intel{margin:10px 20px 0;padding:10px 11px;border:1px solid rgba(202,255,53,.18);border-radius:12px;background:rgba(202,255,53,.035)}
+.podcast-kicker{font-size:6px;font-weight:950;letter-spacing:.12em;color:#caff35;margin-bottom:5px}.podcast-intel>strong{display:block;font-size:9px;color:#f1f3f5;margin-bottom:6px}
+.podcast-highlight{display:flex;gap:7px;padding:6px 0;border-top:1px solid rgba(255,255,255,.06)}.podcast-highlight>span{font-size:10px}.podcast-highlight p{margin:0;color:#aeb4bd;font-size:7px;line-height:1.45}.podcast-highlight small{display:block;margin-top:3px;color:#68717c;font-size:5.5px;line-height:1.3}
 @media(max-width:900px){.feed{grid-template-columns:minmax(0,420px)}}
-@media(max-width:520px){.feed{display:flex;gap:34px;padding-top:26px}.post{width:100%;}.media-frame{height:145px}.post h2{font-size:18px}.post-header{padding-left:16px;padding-right:16px}.post-topic,.story,.post h2,.post-actions{margin-left:16px;margin-right:16px}.takeaway{margin-left:16px;margin-right:16px}.post-footer{margin-left:16px;margin-right:16px}}
+@media(max-width:520px){.feed{display:flex;gap:34px;padding-top:26px}.post{width:100%;}.media-frame{height:145px}.post h2{font-size:18px}.post-header{padding-left:16px;padding-right:16px}.post-topic,.story,.post h2,.post-actions{margin-left:16px;margin-right:16px}.takeaway{margin-left:16px;margin-right:16px}.post-footer{margin-left:16px;margin-right:16px}.podcast-intel{margin-left:16px;margin-right:16px}}
