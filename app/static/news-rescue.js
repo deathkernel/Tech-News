@@ -5,21 +5,21 @@
       if (!response.ok) return;
       const data = await response.json();
       if (!Array.isArray(data)) return;
+      if (typeof items === 'undefined' || typeof render !== 'function') return;
       items = data;
       render();
-      updateIntelligence();
+      if (typeof updateIntelligence === 'function') updateIntelligence();
       const status = document.getElementById('status');
       if (status) status.textContent = `${data.length} ${data.length === 1 ? 'story' : 'stories'}`;
       try {
         const topResponse = await fetch('/top10?minimum_importance=0', { cache: 'no-store' });
         if (topResponse.ok) {
           const topData = await topResponse.json();
-          topStories = topData.stories || [];
-          renderTop10(topData);
+          if (typeof topStories !== 'undefined') topStories = topData.stories || [];
+          if (typeof renderTop10 === 'function') renderTop10(topData);
         }
       } catch {}
     } catch {}
   };
   setTimeout(run, 2500);
-  setTimeout(run, 7000);
 })();
