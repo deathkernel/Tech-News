@@ -1,0 +1,69 @@
+/* JARVIS Horizontal Intelligence Feed
+   Replaces only the news-card presentation. Editorial page remains unchanged. */
+.feed{display:flex;flex-direction:column;gap:0;border-top:1px solid var(--line);background:transparent}
+.post{position:relative;display:grid;grid-template-columns:250px minmax(0,1fr);min-height:0;padding:0;border:0;border-bottom:1px solid var(--line);border-radius:0;background:transparent;box-shadow:none;overflow:hidden;color:var(--ink)}
+.post:hover{transform:none;border-color:var(--line);box-shadow:none;background:#fbfaf6}
+.post-media{grid-column:1;grid-row:1;width:100%;height:168px;padding:16px 18px 16px 0;display:flex}
+.post-image{width:100%;height:100%;display:block;object-fit:cover;background:#e9e7e0;border-radius:4px}
+.post-content{grid-column:2;grid-row:1;display:flex;flex-direction:column;min-width:0;padding:16px 0 16px 20px}
+.post-header{display:flex;align-items:center;justify-content:space-between;gap:12px;margin:0 0 8px}
+.post-topic{display:flex;align-items:center;gap:7px;margin:0;color:#77736d;font-size:6.5px;font-weight:950;letter-spacing:.11em;text-transform:uppercase}
+.topic-icon{font-size:10px}
+.post-topic i{width:3px;height:3px;border-radius:50%;background:#aaa59d}
+.post-date{font-size:6.5px;color:#99958e;white-space:nowrap}
+.post h2{margin:0;max-width:900px;font-family:var(--serif);font-size:24px;line-height:1.05;font-weight:600;letter-spacing:-.03em}
+.post-summary{max-width:850px;margin:7px 0 0;color:#6f6b64;font-size:9px;line-height:1.5}
+.post-signal{display:flex;align-items:baseline;gap:9px;margin-top:9px;max-width:900px}
+.post-signal span{flex:0 0 auto;color:#77736d;font-size:5.5px;font-weight:950;letter-spacing:.13em}
+.post-signal strong{font-family:var(--serif);font-size:9px;line-height:1.35;font-weight:600}
+.post-footer{display:flex;align-items:end;justify-content:space-between;gap:14px;margin-top:auto;padding-top:9px;border-top:1px solid var(--soft);font-size:6px;color:#88847c}
+.post-footer>div:first-child{min-width:0}
+.source{font-weight:900;color:#6d6962}
+.companies{display:inline;margin-left:8px;color:#aaa59d}
+.post-link{flex:0 0 auto}
+.post-link a{color:#3e3b36;text-decoration:none;font-size:6px;font-weight:950;letter-spacing:.1em;white-space:nowrap}
+.post-link a:hover{text-decoration:underline}
+.post-glow,.post-actions,.takeaway,.story{display:none}
+.empty{width:100%;padding:45px 0}
+
+/* First story gets a little more editorial weight without becoming a card. */
+.post:first-child{display:grid;grid-template-columns:330px minmax(0,1fr);min-height:210px;background:#fff;border-bottom:1px solid var(--ink)}
+.post:first-child:hover{background:#fff}
+.post:first-child .post-media{height:210px;padding:18px 20px 18px 0}
+.post:first-child .post-content{padding:18px 0 18px 22px}
+.post:first-child h2{font-size:30px;line-height:.99}
+.post:first-child .post-summary{font-size:9.5px;max-width:760px}
+.post:first-child .post-signal{margin-top:11px}
+.post:first-child .post-signal strong{font-size:9.5px}
+
+@media(max-width:1050px){
+  .post{grid-template-columns:210px minmax(0,1fr)}
+  .post-media{height:158px;padding-right:15px}
+  .post-content{padding-left:16px}
+  .post h2{font-size:21px}
+  .post:first-child{grid-template-columns:260px minmax(0,1fr)}
+  .post:first-child .post-media{height:190px}
+  .post:first-child h2{font-size:26px}
+}
+
+@media(max-width:760px){
+  .post,.post:first-child{display:grid;grid-template-columns:112px minmax(0,1fr);min-height:0}
+  .post-media,.post:first-child .post-media{height:126px;padding:13px 13px 13px 0}
+  .post-content,.post:first-child .post-content{padding:13px 0 13px 13px}
+  .post h2,.post:first-child h2{font-size:18px;line-height:1.05}
+  .post-summary,.post:first-child .post-summary{font-size:8px;line-height:1.4;margin-top:5px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+  .post-signal{display:none}
+  .post-footer{padding-top:6px;margin-top:6px}
+  .companies{display:none}
+  .post-topic{font-size:5.5px;gap:5px}
+  .post-date{font-size:5.5px}
+}
+
+@media(max-width:430px){
+  .post,.post:first-child{grid-template-columns:92px minmax(0,1fr)}
+  .post-media,.post:first-child .post-media{height:112px;padding-right:10px}
+  .post-content,.post:first-child .post-content{padding:11px 0 11px 10px}
+  .post h2,.post:first-child h2{font-size:16px}
+  .post-summary,.post:first-child .post-summary{-webkit-line-clamp:2;font-size:7.5px}
+  .post-topic span:not(.topic-icon):last-child,.post-topic i{display:none}
+}
