@@ -4,6 +4,7 @@ import os
 import re
 import socket
 import ipaddress
+from contextlib import asynccontextmanager
 from datetime import datetime, timezone
 from pathlib import Path
 from urllib.parse import unquote, urlparse
@@ -20,7 +21,14 @@ from .models import NewsItem
 from .screenshot import analyze_screenshot
 from .services import collect_news, daily_brief, daily_top10, intelligence_snapshot
 
-app = FastAPI(title="Tech-News API", version="1.6.0", description="Technology news and future-useful information collection API.")
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    init_db()
+    yield
+
+
+app = FastAPI(title="Tech-News API", version="1.6.0", description="Technology news and future-useful information collection API.", lifespan=lifespan)
 STATIC_DIR = Path(__file__).parent / "static"
 COMPANY_DATA = STATIC_DIR.parent / "data" / "companies.json"
 app.mount("/static", StaticFiles(directory=STATIC_DIR), name="static")
@@ -49,10 +57,6 @@ def set_auth_cookies(response: Response, user_id: int):
     secure = os.getenv("RENDER", "").lower() == "true" or os.getenv("JARVIS_COOKIE_SECURE", "").lower() == "true"
     response.set_cookie(AUTH_COOKIE, token, httponly=True, secure=secure, samesite="lax", max_age=60 * 60, path="/")
     response.set_cookie(CSRF_COOKIE, csrf, httponly=False, secure=secure, samesite="lax", max_age=60 * 60, path="/")
-
-@app.on_event("startup")
-async def startup():
-    init_db()
 
 @app.get("/", include_in_schema=False)
 async def dashboard(): return FileResponse(STATIC_DIR / "index.html")
