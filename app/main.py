@@ -190,11 +190,12 @@ async def article_image(url:str=Query(...,min_length=8)):
     return {"image_url":None}
 
 @app.get("/news",response_model=list[NewsItem])
-async def news(category:str|None=Query(default=None),company:str|None=Query(default=None),minimum_importance:int=Query(default=4,ge=0,le=10), user=Depends(require_user)):
+async def news(category:str|None=Query(default=None),company:str|None=Query(default=None),minimum_importance:int=Query(default=0,ge=0,le=10), user=Depends(require_user)):
     items=await collect_news(minimum_importance)
     if category: items=[item for item in items if item.category.lower()==category.lower()]
     if company: items=[item for item in items if any(company.lower() in name.lower() for name in item.companies)]
     return items
 
 @app.post("/news/refresh",response_model=list[NewsItem])
-async def refresh(minimum_importance:int=Query(default=4,ge=0,le=10), user=Depends(require_user)): return await collect_news(minimum_importance)
+async def refresh(minimum_importance:int=Query(default=0,ge=0,le=10), user=Depends(require_user)):
+    return await collect_news(minimum_importance, force_refresh=True)
