@@ -17,17 +17,15 @@
         <a class="active" href="#top10Panel">Top 10</a>
         <a href="#feed">Latest</a>
         <a href="#feed" data-nav-category="AI">AI</a>
-        <a href="#feed" data-nav-category="Cyber Security">Security</a>
+        <a href="#feed" data-nav-category="Space">Space</a>
+        <a href="#feed" data-nav-category="Marine">Marine</a>
+        <a href="#feed" data-nav-category="Defense Technology">Defense</a>
         <a href="#feed" data-nav-category="Research">Research</a>
-        <a href="#feed" data-nav-type="podcast">Podcasts</a>
-        <a href="#feed" data-nav-type="github">GitHub</a>
       </nav>
       <div class="header-tools">
         <span class="live-pill"><i></i> LIVE</span>
         <button id="brief" class="tool-button" type="button">Daily brief</button>
-        <button id="upload" class="tool-button" type="button">Analyze screenshot</button>
         <button id="refresh" class="refresh-button" type="button"><span>↻</span> Refresh</button>
-        <input id="screenshotInput" type="file" accept="image/*" hidden>
       </div>
     </header>
 
@@ -36,10 +34,10 @@
         <div class="hero-label"><span>JARVIS / DAILY EDITION</span><b>18 SEP 2026</b></div>
         <div class="hero-grid">
           <div>
-            <h1>Technology moves fast.<br><em>Know what matters.</em></h1>
-            <p>JARVIS scans the technology world, filters the noise, and turns meaningful signals into stories you can understand in seconds.</p>
+            <h1>The technology world is bigger than AI.<br><em>Know what matters.</em></h1>
+            <p>JARVIS scans the technology world across computing, space, marine systems, defense technology, aviation, energy, research and more — then filters the noise into stories you can understand in seconds.</p>
           </div>
-          <aside class="hero-note"><span>THE EDITOR'S NOTE</span><strong>Not everything new is important.</strong><p>We surface the updates, research, security events, developer signals and conversations worth tracking.</p></aside>
+          <aside class="hero-note"><span>THE EDITOR'S NOTE</span><strong>Technology has no single lane.</strong><p>From SpaceX, NASA and ISRO to chips, cybersecurity, ships, robotics and developer tools, JARVIS tracks meaningful technology signals across industries.</p></aside>
         </div>
       </section>
 
@@ -61,15 +59,9 @@
         <h2 id="briefHeadline">Building your brief...</h2><p id="briefSummary"></p><div id="briefStories" class="brief-stories"></div>
       </section>
 
-      <section id="screenshotPanel" class="screenshot-panel" hidden>
-        <div><span class="section-kicker">SCREENSHOT INTELLIGENCE</span><h2>Give JARVIS a signal.</h2><p>Upload a technology screenshot and JARVIS will extract the visible information and compare it with the current signal feed.</p></div>
-        <img id="screenshotPreview" alt="Uploaded technology screenshot preview">
-        <div class="screenshot-actions"><button id="clearScreenshot" type="button">Remove</button></div>
-      </section>
-
       <section class="feed-section" id="feedSection">
         <div class="feed-heading">
-          <div><span class="section-kicker">THE SIGNAL FEED</span><h2>What's happening in tech</h2></div>
+          <div><span class="section-kicker">THE SIGNAL FEED</span><h2>What's happening across technology</h2></div>
           <span id="status">Scanning...</span>
         </div>
         <div class="feed-toolbar">
@@ -81,7 +73,7 @@
       </section>
     </main>
 
-    <footer class="editorial-footer"><div><strong>JARVIS</strong><span>Technology intelligence, without the noise.</span></div><span>AI · SECURITY · CLOUD · RESEARCH · DEVELOPERS</span></footer>
+    <footer class="editorial-footer"><div><strong>JARVIS</strong><span>Technology intelligence, without the noise.</span></div><span>AI · SPACE · MARINE · DEFENSE · SECURITY · HARDWARE · RESEARCH</span></footer>
   </div>
   <script src="/static/app.js"></script>
   <script src="/static/post-actions.js"></script>
