@@ -18,7 +18,7 @@ from .models import NewsItem
 from .screenshot import analyze_screenshot
 from .services import collect_news, daily_brief, daily_top10, intelligence_snapshot
 
-app = FastAPI(title="JARVIS Command Center API", version="1.6.0", description="Technology intelligence and future-useful news collection API.")
+app = FastAPI(title="Tech-News API", version="1.6.0", description="Technology intelligence and future-useful news collection API.")
 STATIC_DIR = Path(__file__).parent / "static"
 COMPANY_DATA = STATIC_DIR.parent / "data" / "companies.json"
 app.mount("/static", StaticFiles(directory=STATIC_DIR), name="static")
@@ -52,7 +52,7 @@ async def startup():
 async def dashboard(): return FileResponse(STATIC_DIR / "index.html")
 
 @app.get("/health")
-async def health(): return {"name":"JARVIS Tech-News","status":"online"}
+async def health(): return {"name":"Tech-News","status":"online"}
 
 @app.post("/auth/register")
 async def register(payload: RegisterPayload, response: Response):
@@ -123,7 +123,7 @@ async def morning(minimum_importance:int=Query(default=4,ge=0,le=10), user=Depen
     items=await collect_news(minimum_importance)
     major=[x for x in items if x.importance>=8][:3]
     watch=items[:5]
-    return {"generated_at":datetime.now(timezone.utc),"headline":f"{len(items)} signals scanned for your morning brief","summary":"JARVIS filtered technology updates across AI, space, cyber, defense, hardware, energy, research and other technology sectors.","major":[{"title":x.title,"category":x.category,"source":x.source,"importance":x.importance,"summary":x.summary[:240]} for x in major],"watch":[{"title":x.title,"category":x.category,"source":x.source,"importance":x.importance} for x in watch]}
+    return {"generated_at":datetime.now(timezone.utc),"headline":f"{len(items)} signals scanned for your morning brief","summary":"Tech-News filtered technology updates across AI, space, cyber, defense, hardware, energy, research and other technology sectors.","major":[{"title":x.title,"category":x.category,"source":x.source,"importance":x.importance,"summary":x.summary[:240]} for x in major],"watch":[{"title":x.title,"category":x.category,"source":x.source,"importance":x.importance} for x in watch]}
 
 @app.get("/brief")
 async def brief(minimum_importance:int=Query(default=4,ge=0,le=10), user=Depends(require_user)): return await daily_brief(minimum_importance)
@@ -142,7 +142,7 @@ async def article_image(url:str=Query(...,min_length=8)):
     if parsed.scheme not in {"http","https"} or not parsed.netloc: return {"image_url":None}
     try:
         async with httpx.AsyncClient(timeout=10,follow_redirects=True) as client:
-            response=await client.get(target,headers={"User-Agent":"JARVIS-Tech-News/1.0"}); response.raise_for_status()
+            response=await client.get(target,headers={"User-Agent":"Tech-News/1.0"}); response.raise_for_status()
         if "text/html" not in response.headers.get("content-type",""): return {"image_url":None}
         html_text=response.text[:1500000]
         patterns=[r'<meta[^>]+property=["\']og:image["\'][^>]+content=["\']([^"\']+)',r'<meta[^>]+name=["\']twitter:image["\'][^>]+content=["\']([^"\']+)',r'<meta[^>]+content=["\']([^"\']+)["\'][^>]+property=["\']og:image["\']',r'<meta[^>]+content=["\']([^"\']+)["\'][^>]+name=["\']twitter:image["\']']
