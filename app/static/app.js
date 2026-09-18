@@ -71,16 +71,16 @@ function render(){
 
 function renderPost(item,index){
   const summary=cleanText(item.summary)||'A new technology update worth knowing about.';
-  const shortSummary=summary.length>270?`${summary.slice(0,267).trim()}...`:summary;
+  const shortSummary=summary.length>230?`${summary.slice(0,227).trim()}...`:summary;
   const companies=item.companies?.length?item.companies.join(' · '):'';
   const icon=categoryIcons[item.category]||'⚡';
   const date=item.published_at?formatDate(item.published_at):'Today';
-  const signal=item.importance>=8?'MAJOR UPDATE':item.importance>=6?'IMPORTANT':'TECH UPDATE';
+  const signal=item.importance>=8?'MAJOR SIGNAL':item.importance>=6?'HIGH IMPACT':'TECH UPDATE';
   const imageSource=item.image_url||`/image?url=${encodeURIComponent(item.url)}`;
   const fallback=`<div class="post-image image-fallback" aria-label="${escapeHtml(item.category)} technology visual"><span>${icon}</span><small>${escapeHtml(item.category)}</small></div>`;
   const image=`<img class="post-image" src="${escapeHtml(imageSource)}" alt="${escapeHtml(item.image_alt||item.title)}" loading="lazy" onerror='this.onerror=null;this.parentElement.innerHTML=${JSON.stringify(fallback)}'>`;
-  const contentType=item.content_type==='github'?'⭐ CURATED GITHUB':signal;
-  return `<article class="post" id="post-${index}"><div class="post-glow"></div><header class="post-header"><div class="post-brand"><span class="post-mark">J</span><div><strong>JARVIS</strong><span>TECH NEWS</span></div></div><span class="post-date">${escapeHtml(date)}</span></header><div class="post-topic"><span class="topic-icon">${icon}</span><span>${escapeHtml(item.category)}</span><i></i><span>${contentType}</span></div><div class="media-frame">${image}</div><h2>${escapeHtml(item.title)}</h2><section class="story"><span class="label">WHAT HAPPENED</span><p>${escapeHtml(shortSummary)}</p></section><section class="story why-story"><span class="label">WHY IT MATTERS</span><p>${escapeHtml(buildWhy(item))}</p></section><div class="takeaway"><span class="label">KEY TAKEAWAY</span><strong>${escapeHtml(buildTakeaway(item))}</strong></div><div class="post-actions"><button class="post-action" type="button" data-copy-post>COPY POST</button><a class="post-action" href="${escapeHtml(item.url)}" target="_blank" rel="noopener noreferrer">OPEN SOURCE ↗</a></div><footer class="post-footer"><div><span class="source">${escapeHtml(item.source)}</span>${companies?`<span class="companies">${escapeHtml(companies)}</span>`:''}</div><span class="handle">@JARVIS</span></footer></article>`
+  const contentType=item.content_type==='github'?'CURATED GITHUB':signal;
+  return `<article class="post" id="post-${index}"><div class="post-media">${image}</div><div class="post-content"><header class="post-header"><div class="post-topic"><span class="topic-icon">${icon}</span><span>${escapeHtml(item.category)}</span><i></i><span>${contentType}</span></div><span class="post-date">${escapeHtml(date)}</span></header><h2>${escapeHtml(item.title)}</h2><p class="post-summary">${escapeHtml(shortSummary)}</p><div class="post-signal"><span>${signal}</span><strong>${escapeHtml(buildTakeaway(item))}</strong></div><footer class="post-footer"><div><span class="source">${escapeHtml(item.source)}</span>${companies?`<span class="companies">${escapeHtml(companies)}</span>`:''}</div><div class="post-link"><a href="${escapeHtml(item.url)}" target="_blank" rel="noopener noreferrer">READ SIGNAL ↗</a></div></footer></div></article>`
 }
 
 function buildWhy(item){
@@ -108,25 +108,8 @@ function buildWhy(item){
 }
 
 function buildTakeaway(item){
-  if(item.content_type==='github')return'JARVIS selected this repository because the owner and project activity meet its curated high-signal criteria.';
-  const t={
-    AI:'Track this one — it could shape what developers build with AI next.',
-    LLMs:'Watch the model capability, speed and cost changes before choosing your next stack.',
-    Programming:'A small developer-tool change can become a big workflow change over time.',
-    'Cyber Security':'If you use the affected technology, check for patches and security guidance.',
-    Cloud:'Keep an eye on how this changes cloud architecture, tooling or costs.',
-    'Open Source':'Worth watching if you build with open-source software or developer infrastructure.',
-    Research:'Today’s research can become tomorrow’s developer or product capability.',
-    Hardware:'Hardware changes can directly influence performance and the cost of computing.',
-    Space:'Watch the mission, vehicle or space-system capability and what it enables next.',
-    Marine:'Watch the autonomy, robotics or ocean-system capability and its real-world applications.',
-    'Defense Technology':'Track the underlying sensing, autonomy, communications or electronic-system capability.',
-    Aviation:'Watch the propulsion, aircraft, autonomy or flight-system technology behind the update.',
-    Automotive:'Track the software, autonomy, battery or manufacturing technology involved.',
-    Energy:'Watch the efficiency, storage, generation or infrastructure technology behind the change.',
-    Quantum:'Track whether the research moves from laboratory capability toward practical systems.',
-    Biotech:'Watch the underlying platform or engineering capability and where it can be applied.'
-  };
+  if(item.content_type==='github')return'Curated because the owner and project activity meet JARVIS high-signal criteria.';
+  const t={AI:'Track this one — it could shape what developers build with AI next.',LLMs:'Watch the model capability, speed and cost changes before choosing your next stack.',Programming:'A small developer-tool change can become a big workflow change over time.','Cyber Security':'If you use the affected technology, check for patches and security guidance.',Cloud:'Keep an eye on how this changes cloud architecture, tooling or costs.','Open Source':'Worth watching if you build with open-source software or developer infrastructure.',Research:'Today’s research can become tomorrow’s developer or product capability.',Hardware:'Hardware changes can directly influence performance and the cost of computing.',Space:'Watch the mission, vehicle or space-system capability and what it enables next.',Marine:'Watch the autonomy, robotics or ocean-system capability and its real-world applications.','Defense Technology':'Track the underlying sensing, autonomy, communications or electronic-system capability.',Aviation:'Watch the propulsion, aircraft, autonomy or flight-system technology behind the update.',Automotive:'Track the software, autonomy, battery or manufacturing technology involved.',Energy:'Watch the efficiency, storage, generation or infrastructure technology behind the change.',Quantum:'Track whether the research moves from laboratory capability toward practical systems.',Biotech:'Watch the underlying platform or engineering capability and where it can be applied.'};
   return t[item.category]||'Worth tracking for its potential impact on future technology and engineering workflows.'
 }
 
